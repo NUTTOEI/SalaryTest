@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="th">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>รายละเอียดการชำระเงิน</title>
+        <link rel="preconnect" href="https://fonts.googleapis.com">
+        <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@500;600;700&family=Noto+Sans+Thai:wght@400;500;600&display=swap" rel="stylesheet">
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/tabler-icons/2.47.0/iconfont/tabler-icons.min.css">
+        <link rel="stylesheet" href="admin.css">
+        <link rel="stylesheet" href="member-detail.css">
+    </head>
+    <body>
+        <div class="page">
+            <div class="top-nav">
+                <a href="admin.html" class="back-btn"><i class="ti ti-arrow-left"></i>กลับหน้าหลัก</a>
+            </div>
+
+            <div class="member-card-hero">
+                <div class="m-avatar-large" id="detail-avatar">1</div>
+                <div class="member-info">
+                    <h2 id="detail-name">กำลังโหลด...</h2>
+                    <div class="member-meta" id="detail-summary">สถานะการชำระเงินรายปี</div>
+                </div>
+                <div class="total-paid-box">
+                    <div class="label">ชำระเงินแล้วทั้งหมด</div>
+                    <div class="value" id="detail-total-paid">฿0</div>
+                </div>
+            </div>
+
+            <div class="calendar-header">
+                <h3><i class="ti ti-calendar"></i> ปฏิทินการชำระเงินประจำปี (12 เดือน 2569)</h3>
+                <span class="legend">
+                    <span class="dot paid"></span> จ่ายแล้ว
+                    <span class="dot unpaid"></span> ยังไม่จ่าย
+                </span>
+            </div>
+
+            <div class="months-grid" id="months-grid">
+
+            </div>
+        </div>
+
+        <script src="data.js"></script>
+        <script src="member-detail.js"></script>
+    </body>
+</html>
