@@ -445,6 +445,7 @@ button, input {
     box-shadow: var(--shadow);
     text-align: center;
     border: 1px solid var(--line);
+    margin-bottom: 16px;
 }
 
 .pay-summary .who { 
