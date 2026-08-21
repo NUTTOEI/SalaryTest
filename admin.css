@@ -91,6 +91,23 @@ body {
   background: #3E4EC0;
 }
 
+.export-excel-btn {
+  padding: 8px 14px;
+  border-radius: 8px;
+  border: 1px solid #2E8B57;
+  background: #2E8B57;
+  color: #fff;
+  font-size: 12px;
+  font-weight: 500;
+  font-family: 'Noto Sans Thai', sans-serif;
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+.export-excel-btn:hover {
+  background: #247044;
+}
+
 .hero {
   background: #fff;
   border-radius: 16px;

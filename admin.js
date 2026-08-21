@@ -20,6 +20,36 @@ function safeFmtMoney(val) {
     return typeof fmtMoney === "function" ? fmtMoney(val) : `฿${Number(val || 0).toLocaleString()}`;
 }
 
+function exportMembersToExcel() {
+    if (typeof XLSX === "undefined") {
+        alert("ไม่สามารถโหลดระบบส่งออก Excel ได้ กรุณาลองใหม่อีกครั้ง");
+        return;
+    }
+
+    const rows = MEMBERS.map((member, index) => {
+        const paidMonths = Array.isArray(member.paidMonths) ? member.paidMonths : [];
+        return {
+            "ลำดับ": index + 1,
+            "ชื่อสมาชิก": member.name || "",
+            "อัตราต่อเดือน": Number(member.amount) || 0,
+            "ชำระแล้ว (เดือน)": paidMonths.filter(Boolean).length,
+            "สถานะเดือนปัจจุบัน": isMemberPaidCurrent(member) ? "จ่ายแล้ว" : "ค้างชำระ"
+        };
+    });
+
+    const worksheet = XLSX.utils.json_to_sheet(rows);
+    worksheet["!cols"] = [
+        { wch: 8 },
+        { wch: 30 },
+        { wch: 16 },
+        { wch: 18 },
+        { wch: 24 }
+    ];
+    const workbook = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(workbook, worksheet, "สมาชิก");
+    XLSX.writeFile(workbook, `รายชื่อสมาชิก-${new Date().toISOString().slice(0, 10)}.xlsx`);
+}
+
 let selectedAdminMonth = new Date().getMonth();
 let state = { query: "", filter: "all", sort: "index", ratePreview: 100 };
 
@@ -362,6 +392,8 @@ if (addBtn && nameInput) {
         }
     });
 }
+
+document.getElementById("export-excel-btn")?.addEventListener("click", exportMembersToExcel);
 
 function viewHistory(memberId) {
    const member = MEMBERS.find(m => Number(m.id) === Number(memberId));
