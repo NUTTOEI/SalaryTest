@@ -388,7 +388,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     if (document.getElementById('qr-name')) {
         document.getElementById('qr-name').textContent = (typeof ROOM !== 'undefined' && ROOM.promptpayName)
             ? ROOM.promptpayName
-            : "นายปุณณ์เมธ ม่วงวิเชียร";
+            : "นายณัฐวัฒน์ สุดพูล";
     }
 
     const COLLECTION_MODE = localStorage.getItem("fund-dashboard-mode") || "month";
@@ -517,7 +517,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     function updateQRCode() {
         const promptpayAccount = (typeof ROOM !== 'undefined' && ROOM.promptpayId)
             ? ROOM.promptpayId
-            : (typeof window.targetAcc !== 'undefined' ? window.targetAcc : "0849731038");
+            : (typeof window.targetAcc !== 'undefined' ? window.targetAcc : "0863481103");
 
         const totalAmount = selectedMonths.length * rate;
 

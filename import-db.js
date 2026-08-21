@@ -3,15 +3,16 @@ const mysql = require('mysql2/promise');
 
 async function importSQL() {
   const connection = await mysql.createConnection({
-    host: 'roundhouse.proxy.rlwy.net', // Public Host ใหม่จาก Railway
-    port: 24417,                        // เลขพอร์ต 5 หลักใหม่จาก Railway
+    host: 'sakura.proxy.rlwy.net',
+    port: 14171,
     user: 'root',
-    password: 'Password123',            // Password ใหม่จาก Railway
+    password: 'QxDdbvBOqDdCkFHdZnPdsEcTJaJlGfOM',
     database: 'railway',
-    multipleStatements: true            // อนุญาตให้รันหลายคำสั่งพร้อมกัน
+    multipleStatements: true
   });
 
-  const files = ['schemas.sql', 'fund_dashboard.sql', 'fund_dashboard_members.sql'];
+  // นำเข้าเฉพาะ 2 ไฟล์นี้พอครับ (ตัด fund_dashboard_members.sql ออก)
+  const files = ['schemas.sql', 'fund_dashboard.sql'];
 
   for (const file of files) {
     if (fs.existsSync(file)) {
@@ -19,6 +20,8 @@ async function importSQL() {
       const sql = fs.readFileSync(file, 'utf8');
       await connection.query(sql);
       console.log(`✅ ${file} สำเร็จ!`);
+    } else {
+      console.log(`⚠️ ไม่พบไฟล์ ${file}`);
     }
   }
 
