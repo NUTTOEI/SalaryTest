@@ -679,8 +679,8 @@ button, input {
 .month-select-grid {
     display: grid;
     grid-template-columns: repeat(3, 1fr);
-    gap: 8px;
-    margin-top: 12px;
+    gap: 14px;
+    margin-top: 16px;
 }
 
 .month-option {
@@ -818,7 +818,7 @@ button, input {
     background: #fff;
     border: 1.5px solid #E4E6F0;
     border-radius: 12px;
-    padding: 12px;
+    padding: 16px 10px;
     text-align: center;
     cursor: pointer;
     transition: all 0.2s ease;
