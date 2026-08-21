@@ -680,7 +680,7 @@ button, input {
     display: grid;
     grid-template-columns: repeat(3, 1fr);
     gap: 14px;
-    margin-top: 16px;
+    margin-top: 20px;
 }
 
 .month-option {
