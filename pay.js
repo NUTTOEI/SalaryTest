@@ -563,6 +563,7 @@ document.addEventListener("DOMContentLoaded", async () => {
         }
 
         const payAmount = selectedMonths.length * rate;
+        let transferorName = null;
 
         // เช็กและอ่านไฟล์สลิป (ถ้าเลือกสแกนจ่าย)
         if (method === "PromptPay") {
@@ -589,6 +590,7 @@ document.addEventListener("DOMContentLoaded", async () => {
                     return;
                 }
 
+                transferorName = verifyData.transferorName || null;
                 console.log("✅ ตรวจสอบสลิปผ่านแล้ว:", verifyData.message);
             } catch (err) {
                 console.error("❌ เกิดข้อผิดพลาดในการตรวจสลิป:", err);
@@ -621,6 +623,7 @@ document.addEventListener("DOMContentLoaded", async () => {
             amount: payAmount,
             mode: COLLECTION_MODE,
             items: [...selectedMonths],
+            transferorName: transferorName,
             slipUrl: slipBase64
         });
 

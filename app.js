@@ -290,6 +290,12 @@ app.post('/verify-slip', upload.single('slip_image'), async (req, res) => {
         }
 
         const slipData = result.data;
+        const transferorName = String(
+            slipData.sender?.name ||
+            slipData.sender?.displayName ||
+            slipData.sender?.account?.name ||
+            ''
+        ).trim();
 
         // 3. ตรวจสอบยอดเงินโอนจริงจากธนาคาร
         if (parseFloat(slipData.amount) !== expectedAmount) {
@@ -331,6 +337,7 @@ app.post('/verify-slip', upload.single('slip_image'), async (req, res) => {
 
         // 6. ส่งแจ้งเตือน LINE Notify / LINE Messaging API
         const messageText =
+            `👥 ชื่อผู้โอน: ${transferorName || 'ไม่ระบุ'}\n` +
             `🔔 แจ้งเตือนได้รับการชำระเงินสำเร็จ!\n` +
             `👤 ผู้รับ: ${slipData.receiver.name}\n` +
             `💰 ยอดเงิน: ${slipData.amount} บาท\n` +
@@ -352,7 +359,11 @@ app.post('/verify-slip', upload.single('slip_image'), async (req, res) => {
         );
     }
 
-        return res.json({ status: 'success', message: 'ตรวจสอบสลิปสำเร็จ' });
+        return res.json({
+            status: 'success',
+            message: 'ตรวจสอบสลิปสำเร็จ',
+            transferorName
+        });
 
     } catch (err) {
         console.error('❌ /verify-slip Error:', err.response?.data || err.message);
