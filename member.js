@@ -19,6 +19,11 @@ function safeFmtMoney(val) {
     return typeof fmtMoney === "function" ? fmtMoney(val) : `฿${Number(val || 0).toLocaleString()}`;
 }
 
+function memberNumber(member) {
+    const index = MEMBERS.findIndex(item => item.id === member.id);
+    return index === -1 ? "" : String(index + 1);
+}
+
 function statusLabel(m) {
     const statusInfo = getMemberStatus(m);
     return `<span class="u-tag ${statusInfo.class}">${statusInfo.text}</span>`;
@@ -102,9 +107,8 @@ function renderUserList() {
 
     list.innerHTML = items.map(m => {
         const tint = typeof tintFor === "function" ? tintFor(m.id) : { bg: "#eef0fb", fg: "#4c5fd5" };
-        const initials = typeof initialsOf === "function" ? initialsOf(m.name) : m.name.substring(0, 2);
         return `<button class="user-item" data-select-id="${m.id}">
-            <div class="avatar" style="background:${tint.bg};color:${tint.fg}">${initials}</div>
+            <div class="avatar" style="background:${tint.bg};color:${tint.fg}">${memberNumber(m)}</div>
             <div class="u-name">${m.name}</div>
             ${statusLabel(m)}
         </button>`;
@@ -140,7 +144,7 @@ function renderProfile() {
     const tint = typeof tintFor === "function" ? tintFor(m.id) : { bg: "#eef0fb", fg: "#4c5fd5" };
     const avatar = document.getElementById("profile-avatar");
     if (avatar) {
-        avatar.textContent = typeof initialsOf === "function" ? initialsOf(m.name) : m.name.substring(0, 2);
+        avatar.textContent = memberNumber(m);
         avatar.style.background = tint.bg;
         avatar.style.color = tint.fg;
     }
