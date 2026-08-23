@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="th">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <meta name="description" content="Comsci41">
+<meta name="robots" content="index, follow">
+<meta name="google-site-verification" content="admin.html">
+        <title>SCI Money</title>
+        <link rel="preconnect" href="https://fonts.googleapis.com">
+        <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@500;600;700&family=Noto+Sans+Thai:wght@400;500;600&display=swap" rel="stylesheet">
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/tabler-icons/2.47.0/iconfont/tabler-icons.min.css">
+        <link rel="stylesheet" href="admin.css">
+    </head>
+    <body>
+        <div class="page">
+            <div class="top-row">
+                <div style="flex: 1; min-width: 220px;">
+                    <div class="eyebrow">กระดานเงินสาขา</div>
+                    <div class="title" id="branch-title" contenteditable="true" spellcheck="false">Comsci 42</div>
+                    <a href="member.html" class="admin-link">หน้าสำหรับสมาชิก →</a>
+                </div>
+                <div class="rate-edit">
+                    <i class="ti ti-coin"></i>อัตราต่อคน
+                    <input id="rate-input" type="number" step="10" placeholder="100">
+                    <span>บาท/เดือน</span>
+                    <button id="apply-rate-btn" class="apply-rate-btn" title="ตั้งอัตรารายเดือนให้ทุกคนเท่ากัน">ใช้กับทุกคน</button>
+                </div>
+            </div>
+
+            <div class="mode-select-box">
+                <span class="mode-label">
+                    <i class="ti ti-adjustments-horizontal"></i> รูปแบบการเก็บเงินสาขา:
+                </span>
+                <div class="segmented-control">
+                    <button type="button" class="mode-btn" id="mode-month-btn" onclick="setCollectionMode('month')">
+                        <i class="ti ti-calendar"></i> รายเดือน
+                    </button>
+                    <button type="button" class="mode-btn disabled" id="mode-week-btn" disabled title="กำลังปรับปรุง">
+                        <i class="ti ti-calendar-event"></i> รายสัปดาห์
+                    </button>
+                </div>
+            </div>
+
+            <div class="hero">
+                <div class="ring-wrap">
+                    <svg width="128" height="128" viewBox="0 0 128 128">
+                        <circle cx="64" cy="64" r="52" fill="none" stroke="#EEF0FB" stroke-width="12"/>
+                        <circle id="progress-ring-fg" cx="64" cy="64" r="52" fill="none" stroke="#4C5FD5" stroke-width="12" stroke-linecap="round" transform="rotate(-90 64 64)"/>
+                    </svg>
+                    <div class="ring-pct" id="progress-pct"></div>
+                </div>
+                <div class="hero-figures">
+                    <div class="hero-row">
+                        <div><div class="hero-label">เก็บได้แล้ว</div><div class="hero-value" id="stat-collected"></div></div>
+                        <div style="text-align: right"><div class="hero-label">เป้าหมาย</div>
+                        <div class="hero-value small" id="stat-target" style="cursor: pointer;" title="คลิกเพื่อตั้งเป้าหมาย"></div>
+                    </div>
+                    </div>
+                    <div class="summary"><i class="ti ti-info-circle"></i><span id="summary-line"></span></div>
+                    <div class="summary-projected" id="summary-projected"></div>
+                </div>
+            </div>
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-icon">
+                       <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 7m-4 0a4 4 0 1 0 8 0a4 4 0 1 0 -8 0"></path><path d="M3 21v-2a4 4 0 0 1 4 -4h4a4 4 0 0 1 4 4v2"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path><path d="M21 21v-2a4 4 0 0 0 -3 -3.85"></path></svg>
+                    </div>
+                    <div><div class="stat-label">สมาชิกทั้งหมด</div><div class="stat-value" id="stat-total"></div></div>
+                </div>
+                <div class="stat-card paid">
+                    <div class="stat-icon"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 12m-9 0a9 9 0 1 0 18 0a9 9 0 1 0 -18 0"></path><path d="M9 12l2 2l4 -4"></path></svg>
+                </div>
+                    <div><div class="stat-label">จ่ายแล้ว</div><div class="stat-value" id="stat-paid"></div></div>
+                </div>
+                <div class="stat-card unpaid">
+                    <div class="stat-icon"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12a9 9 0 1 0 18 0a9 9 0 0 0 -18 0"></path><path d="M12 7v5l3 3"></path></svg>
+                </div>
+                    <div><div class="stat-label">ยังไม่จ่าย</div><div class="stat-value" id="stat-unpaid"></div></div>
+                </div>
+            </div>
+
+            <div class="add-member-row">
+                <input id="new-name-input" class="add-name-input" placeholder="เพิ่มรายชื่อ...">
+                <button id="add-member-btn" class="apply-rate-btn"><i class="ti ti-plus"></i> เพิ่มสมาชิก</button>
+                <button id="reset-all-btn" class="btn-danger" style="background-color: #eF4444; color: white; border: none; padding: 8px 16px; border-radius: 6px; cursor: pointer; font-family: inherit; font-size: 14px; display: inline-flex; align-items: center; gap: 6px;"><i class="ti ti-refresh"></i> รีเซ็ท</button>
+                <button id="export-excel-btn" class="export-excel-btn" type="button"><i class="ti ti-file-spreadsheet"></i> ส่งออก Excel</button>
+            </div>
+
+            <div class="controls">
+                <div class="search-wrap">
+                    <i class="ti ti-search"></i>
+                    <input id="search-input" class="search" placeholder="ค้นหาสมาชิก...">
+                </div>
+                <div class="filter-group">
+                    <button class="filter-btn active" data-filter="all">ทั้งหมด</button>
+                    <button class="filter-btn" data-filter="paid">จ่ายแล้ว</button>
+                    <button class="filter-btn" data-filter="unpaid">ยังไม่จ่าย</button>
+                </div>
+                <div class="sort-group">
+                    <button class="sort-btn active" data-sort="index" title="เรียงตามลำดับ"><i class="ti ti-list-numbers"></i></button>
+                    <button class="sort-btn" data-sort="name" title="เรียงตามชื่อ"><i class="ti ti-sort-a-z"></i></button>
+                    <button class="sort-btn" data-sort="unpaid-first" title="ยังไม่จ่ายขึ้นก่อน"><i class="ti ti-flag"></i></button>
+                </div>
+            </div>
+
+            <div class="count-line" id="count-line"></div>
+            <div class="member-list" id="member-list"></div>
+
+            <div id="history-modal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.5); justify-content: center; align-items: center; z-index: 9999;">
+                <div style="background: white; padding: 20px; border-radius: 12px; max-width: 400px; width: 90%; box-shadow: 0 10px 25px rgba(0,0,0,0.15);">
+                    <h3 id="modal-member-name" style="margin-top:0; color:#333;">ประวัติการชำระเงิน</h3>
+                    <ul id="modal-history-list" style="margin: 15px 0; padding-left: 20px; max-height: 250px; overflow-y: auto; color:#555;"></ul>
+                    <button onclick="closeHistoryModal()" style="padding: 8px 16px; background:#4C5FD5; color:white; border:none; border-radius:6px; cursor: pointer;">ปิด</button>
+                </div>
+            </div>
+        </div>
+
+        <div id="target-modal" class="modal-overlay" style="display: none;">
+            <div class="modal-card">
+                <div class="modal-header">
+                    <div class="modal-icon target">
+                        <i class="ti ti-target-arrow"></i>
+                    </div>
+                    <div>
+                        <div class="modal-title">ตั้งเป้าหมายยอดรวม</div>
+                        <div class="modal-sub">กำหนดจำนวนเงินเป้าหมาย/สาขา</div>
+                    </div>
+                </div>
+                <div class="modal-body">
+                    <label class="modal-label" for="target-modal-input">จำนวนเงินเป้าหมาย</label>
+                    <div class="input-currency-wrap">
+                        <span class="currency-symbol">$</span>
+                        <input type="number" id="target-modal-input" class="modal-input" placeholder="0" min="0" autocapitalize="off">
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn-modal-cancel" onclick="closeTargetModal()">ยกเลิก</button>
+                    <button type="button" class="btn-modal-save" id="btn-save-target">บันทึกเป้าหมายเงินสาขาสำเร็จ</button>
+                </div>
+            </div>
+        </div>
+
+        <div id="reset-modal" class="modal-overlay" style="display: none;">
+            <div class="modal-card">
+                <div class="modal-header">
+                    <div class="modal-icon" style="background: #FBEAEA; color: #E0524B;">
+                        <i class="ti ti-alert-triangle"></i>
+                    </div>
+                    <div>
+                        <div class="modal-title">รีเซ็ทข้อมูลทั้งหมด</div>
+                        <div class="modal-sub">ระบบจะล้างสถานะชำระเงินและประวัติทั้งหมด</div>
+                    </div>
+                </div>
+                <div class="modal-body">
+                    <p style="margin: 0; font-size: 14px; color: #555; line-height: 1.5;">
+                        คุณต้องการรีเซ็ทสถานะและประวัติใช่หรือไม่?<br>
+                        <span style="color: #E0524B; font-weight: 500;">*การดำเนินการนี้จะไม่สามารถย้อนกลับได้</span>
+                    </p>  
+                </div> 
+                <div class="modal-footer">
+                    <button type="button" class="btn-modal-cancel" onclick="closeResetModal()">ยกเลิก</button>
+                    <button type="button" class="btn-modal-save" id="btn-confirm-reset" style="background-color: #E0524B; box-shadow: 0 4px 12px rgba(224, 82, 75, 0.25);">ยืนยันล้างข้อมูล</button>
+                </div>
+            </div>
+        </div>
+
+        <script src="data.js"></script>
+        <script src="https://cdn.sheetjs.com/xlsx-0.20.3/package/dist/xlsx.full.min.js"></script>
+        <script src="admin.js"></script>
+    </body>
+</html>

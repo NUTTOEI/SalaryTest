@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="th">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <metaname="description"content="Comsci41">
+<meta name="robots" content="index, follow">
+<meta name="google-site-verification" content="member.html">
+        <title>เงินรุ่น Comsci41</title>
+        <link rel="preconnect" href="https://fonts.googleapis.com">
+        <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@500;600;700&family=Noto+Sans+Thai:wght@400;500;600&display=swap" rel="stylesheet">
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/tabler-icons/2.47.0/iconfont/tabler-icon.min.css">
+        <link rel="stylesheet" href="member.css">
+    </head>
+    <body>
+        <div class="page">
+            <div class="brand">
+                <div class="eyebrow">ระบบเก็บเงินสาขา</div>
+                <div class="title" id="room-title">เงินรวมสาขา</div>
+                <!-- <a href="admin.html" class="admin-link">สำหรับผู้ดูแล →</a> -->
+            </div>
+
+            <div id="home-screen">
+
+                <!-- สรุปยอดเงินแบบใหม่ (วงกลมใหญ่) -->
+                <div class="jar-card summary-card-new">
+                    <!-- วงกลมแสดงเปอร์เซ็นต์และยอดเงิน -->
+                    <div class="circle-chart-wrap">
+                        <svg class="progress-ring" width="120" height="120" viewBox="0 0 120 120">
+                            <circle class="progress-ring-bg" cx="60" cy="60" r="52" stroke="#EFEAF9" stroke-width="10" fill="none" />
+                            <circle id="circle-progress" class="progress-ring-fill" cx="60" cy="60" r="52" stroke="#5B4A8F" stroke-width="10" fill="none" stroke-linecap="round" stroke-dasharray="326.72" stroke-dashoffset="326.72" transform="rotate(-90 60 60)" />
+                        </svg>
+                        <div class="circle-inner-content">
+                            <div class="circle-text" id="circle-center-money">฿0</div>
+                        </div>
+                    </div>
+
+                    <!-- รายละเอียดข้อมูลสรุปยอดเงิน -->
+                    <div class="jar-info">
+                        <div class="jar-pct-main" id="jar-pct">0%</div>
+                        <div class="jar-amount">เก็บได้ <b id="jar-collected">฿0</b> จากเป้า <b id="jar-target">฿0</b></div>
+                        <div class="jar-sub" id="jar-sub">จ่ายแล้ว 0 จาก 0 คน</div>
+                    </div>
+                </div>
+
+                <div class="search-wrap">
+                    <i class="ti ti-search"></i>
+                    <input id="user-search" placeholder="พิมพ์ชื่อของคุณเพื่อเช็กยอด...">
+                </div>
+
+                <div class="list-label" id="list-label">รายชื่อสมาชิกทั้งหมด</div>
+
+                <div id="user-list" class="user-list"></div>
+            </div>
+
+            <div id="profile-screen" class="hidden">
+                <button class="back-btn" id="back-btn"><i class="ti ti-arrow-left"></i>กลับไปหน้ารายชื่อ</button>
+
+                <div class="profile-head">
+                    <div class="profile-avatar" id="profile-avatar"></div>
+                    <div class="profile-name" id="profile-name"></div>
+                    <div class="profile-status" id="profile-status"></div>
+                </div>
+
+                <div class="balance-card">
+                    <div class="balance-label" id="balance-label"></div>
+                    <div class="balance-amount" id="balance-amount"></div>
+                    <a href="pay.html" class="pay-btn" id="pay-link">
+                        <i class="ti ti-credit-card"></i> ไปหน้าชำระเงิน
+                    </a>
+                    <div class="status-note hidden" id="status-note"></div>
+                </div>
+
+                <div class="history-card">
+                    <div class="history-head">
+                        <span>ประวัติการชำระเงิน</span>
+                        <span class="total" id="history-total">฿0 สะสม</span>
+                    </div>
+                    <div id="history-list"></div>
+                </div>
+            </div>
+        </div>
+
+        <script src="data.js"></script>
+        <script src="member.js"></script>
+    </body>
+</html>
