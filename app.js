@@ -68,9 +68,9 @@ app.get('/api/members', async (req, res) => {
         }
 
         const [rows] = await pool.query(sql, params);
-        res.json(rows.map(rowToMember));
+        const members = rows.map(rowToMember);
+        res.json(members);
     } catch (err) {
-        console.error('GET /api/members error:', err);
         res.status(500).json({ status: 'error', message: err.message });
     }
 });
