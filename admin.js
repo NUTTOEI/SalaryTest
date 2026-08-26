@@ -612,3 +612,89 @@ function setupBranchTitle() {
         }
     });
 }
+
+const ADMIN_BRANCH_MAPPING = {
+    "6821207004": "comsci41",
+    "6821720007": "BWBS"
+};
+
+function getBranchFromStudentId(studentId) {
+    if (ADMIN_BRANCH_MAPPING[studentId]) {
+        return ADMIN_BRANCH_MAPPING[studentId];
+    }
+
+    if (studentId.startsWith("212")) return "comsci41";
+    if (studentId.startsWith("217")) return "BWBS";
+
+    return null;
+}
+
+function processAdminLogin() {
+    const input = document.getElementById("login-student-id");
+    const errorEl = document.getElementById("login-error");
+    const studentId = inputEl ? inputEl.value.trim() : "";
+
+    if (!studentId) {
+        showLoginError("กรุณากรอกรหัสนักศึกษา");
+        return;
+    }
+
+    const branch = getBranchFromStudentId(studentId);
+    if (!branch) {
+        showLoginError("ไม่พบรหัสนักศึกษานี้");
+        return;
+    }
+
+    sessionStorage.setItem("admin_student_id", studentId);
+    sessionStorage.setItem("admin_branch", branch);
+
+    document.getElementById("login-modal").style.display = "none";
+    applyAdminBranch(branch);
+}
+
+function showLoginError(msg) {
+    const errorEl = document.getElementById("login-error");
+    if (errorEl) {
+        errorEl.textContent = msg;
+        errorEl.style.display = "block";
+    }
+}
+
+function applyAdminBranch(branch) {
+    const filterSelect = document.getElementById("filter-branch-select");
+    if (filterSelect) {
+        filterSelect.value = branch;
+        filterSelect.disabled = true; //ล็อกไม่ให้เลือกสาขาอื่น
+    }
+
+    const newBranchSelect = document.getElementById("new-branch-select");
+    if (newBranchSelect) {
+        newBranchSelect.value = branch;
+        newBranchSelect.disabled = true;
+    }
+    loadFromStorage();
+}
+
+function initAdminAuth() {
+    const savedBranch = sessionStorage.getItem("admin_branch");
+    const loginModal = document.getElementById("login-modal");
+
+    if (savedBranch) {
+        if (loginModal) loginModal.style.display = "none";
+        applyAdminBranch(savedBranch);
+    } else {
+        if (loginModal) loginModal.style.display = "flex";
+    }
+
+    const submitBtn = document.getElementById("btn-login-submit");
+    const inputEl = document.getElementById("login-student-id");
+
+    if (submitBtn) submitBtn.addEventListener("click", processAdminLogin);
+    if (inputEl) {
+        inputEl.addEventListener("keydown", (e) => {
+            if (e.key === "Enter") processAdminLogin();
+        });
+    }
+}
+
+document.addEventListener("DOMContentLoaded", initAdminAuth);

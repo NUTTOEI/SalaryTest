@@ -81,11 +81,12 @@
             </div>
 
             <div class="add-member-row">
-                <input id="new-name-input" class="add-name-input" placeholder="เพิ่มรายชื่อ...">
+                <input id="new-name-input" class="add-name-input" placeholder="เพิ่มรายชื่อ..." >
                 <select id="new-branch-select" class="branch-select" style="padding: 8px; border-radius: 6px; border: 1px solid #ccc;">
                     <option value="comsci41">comsci41</option>
                     <option value="comsci42">comsci42</option>
                 </select>
+            
                 <button id="add-member-btn" class="apply-rate-btn"><i class="ti ti-plus"></i> เพิ่มสมาชิก</button>
                 <button id="reset-all-btn" class="btn-danger" style="background-color: #eF4444; color: white; border: none; padding: 8px 16px; border-radius: 6px; cursor: pointer; font-family: inherit; font-size: 14px; display: inline-flex; align-items: center; gap: 6px;"><i class="ti ti-refresh"></i> รีเซ็ท</button>
                 <button id="export-excel-btn" class="export-excel-btn" type="button"><i class="ti ti-file-spreadsheet"></i> ส่งออก Excel</button>
@@ -175,6 +176,30 @@
                 </div>
             </div>
         </div>
+
+        <div id="login-modal" class="modal-overlay" style="display: flex; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(15, 23, 42, 0.85); backdrop-filter: blur(4px); z-index: 10000; align-items: center; justify-content: center;">
+    <div class="modal-card" style="background: white; padding: 28px; border-radius: 16px; max-width: 380px; width: 90%; text-align: center; box-shadow: 0 20px 25px -5px rgba(0,0,0,0.3);">
+        <div class="modal-header" style="display: flex; flex-direction: column; align-items: center; gap: 8px; margin-bottom: 20px;">
+            <div style="width: 50px; height: 50px; background: #EEF0FB; color: #4C5FD5; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 24px;">
+                <i class="ti ti-user-check"></i>
+            </div>
+            <div style="font-size: 20px; font-weight: 600; color: #1e293b;">ยืนยันตัวตน Admin</div>
+            <div style="font-size: 13px; color: #64748b;">กรอกรหัสนักศึกษาเพื่อเข้าสู่ระบบ</div>
+        </div>
+        <div class="modal-body">
+            <input type="text" id="login-student-id" placeholder="กรอกรหัสนักศึกษา (เช่น 65000001)" 
+                   style="width: 100%; padding: 12px; border: 1.5px solid #cbd5e1; border-radius: 8px; font-size: 16px; text-align: center; font-family: inherit; box-sizing: border-box;"
+                   autofocus autocomplete="off">
+            <div id="login-error" style="color: #e0524b; font-size: 13px; margin-top: 10px; display: none;"></div>
+        </div>
+        <div class="modal-footer" style="margin-top: 20px;">
+            <button type="button" id="btn-login-submit" 
+                    style="width: 100%; padding: 12px; background: #4C5FD5; color: white; border: none; border-radius: 8px; font-size: 15px; font-weight: 500; cursor: pointer; font-family: inherit;">
+                เข้าสู่ระบบ
+            </button>
+        </div>
+    </div>
+</div>
 
         <script src="data.js"></script>
         <script src="https://cdn.sheetjs.com/xlsx-0.20.3/package/dist/xlsx.full.min.js"></script>
