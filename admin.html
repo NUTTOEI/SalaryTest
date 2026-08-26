@@ -222,6 +222,25 @@
     </div>
 </div>
 
+<!-- Popup ยืนยันการออกจากระบบ -->
+<div id="logout-confirm-modal" class="custom-modal-overlay">
+    <div class="custom-modal-card">
+        <div class="modal-icon warning-icon">
+            <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path>
+                <polyline points="16 17 21 12 16 7"></polyline>
+                <line x1="21" y1="12" x2="9" y2="12"></line>
+            </svg>
+        </div>
+        <h3>ยืนยันการออกจากระบบ</h3>
+        <p>คุณต้องการออกจากระบบการจัดการใช่หรือไม่?</p>
+        <div class="modal-actions">
+            <button id="cancel-logout-btn" class="btn-secondary">ยกเลิก</button>
+            <button id="confirm-logout-btn" class="btn-danger">ออกจากระบบ</button>
+        </div>
+    </div>
+</div>
+
         <script src="data.js"></script>
         <script src="https://cdn.sheetjs.com/xlsx-0.20.3/package/dist/xlsx.full.min.js"></script>
         <script src="admin.js"></script>

@@ -708,37 +708,31 @@ if (document.readyState === "loading") {
 }
 
 document.addEventListener("DOMContentLoaded", () => {
-    const toggleBtn = document.getElementById("menu-toggle-btn");
-    const closeBtn = document.getElementById("close-drawer-btn");
-    const drawer = document.getElementById("side-drawer");
-    const overlay = document.getElementById("menu-overlay");
     const logoutBtn = document.getElementById("logout-btn");
+    const logoutModal = document.getElementById("logout-confirm-modal");
+    const cancelLogoutBtn = document.getElementById("cancel-logout-btn");
+    const confirmLogoutBtn = document.getElementById("confirm-logout-btn");
 
-    function openMenu() {
-        if (drawer) drawer.classList.add("open");
-        if (overlay) overlay.classList.add("active");
-    }
-
-    function closeMenu() {
-        if (drawer) drawer.classList.remove("open");
-        if (overlay) overlay.classList.remove("active");
-    }
-
-    if (toggleBtn) toggleBtn.addEventListener("click", openMenu);
-    if (closeBtn) closeBtn.addEventListener("click", closeMenu);
-    if (overlay) overlay.addEventListener("click", closeMenu);
-
-    // ระบบออกจากระบบ (Logout)
+    // เปิด Modal เมื่อกดปุ่มออกจากระบบ
     if (logoutBtn) {
         logoutBtn.addEventListener("click", () => {
-            if (confirm("คุณต้องการออกจากระบบหรือไม่?")) {
-                // ลบการยืนยันตัวตนออกจาก Session
-                sessionStorage.removeItem("admin_student_id");
-                sessionStorage.removeItem("admin_branch");
-                
-                // โหลดหน้าใหม่เพื่อกลับสู่หน้าเข้าสู่ระบบ
-                location.reload();
-            }
+            if (logoutModal) logoutModal.classList.add("active");
+        });
+    }
+
+    // ปิด Modal เมื่อกดปุ่มยกเลิก
+    if (cancelLogoutBtn) {
+        cancelLogoutBtn.addEventListener("click", () => {
+            if (logoutModal) logoutModal.classList.remove("active");
+        });
+    }
+
+    // ยืนยันออกจากระบบเมื่อกดปุ่ม "ออกจากระบบ" ใน Popup
+    if (confirmLogoutBtn) {
+        confirmLogoutBtn.addEventListener("click", () => {
+            sessionStorage.removeItem("admin_student_id");
+            sessionStorage.removeItem("admin_branch");
+            location.reload();
         });
     }
 });
