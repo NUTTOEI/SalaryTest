@@ -116,7 +116,7 @@ app.post('/api/admin/members', async (req, res) => {
         const [result] = await pool.query(
             `INSERT INTO members (branch, name, amount, paid_months, paid_weeks, history)
              VALUES (?, ?, ?, ?, ?, ?)`,
-            ['memberBranch', String(name).trim(), rate, JSON.stringify(DEFAULT_MONTHS()), JSON.stringify(DEFAULT_WEEKS()), JSON.stringify([])]
+            [memberBranch, String(name).trim(), rate, JSON.stringify(DEFAULT_MONTHS()), JSON.stringify(DEFAULT_WEEKS()), JSON.stringify([])]
         );
         const [rows] = await pool.query('SELECT * FROM members WHERE id = ?', [result.insertId]);
         res.json({ status: 'success', member: rowToMember(rows[0]) });
