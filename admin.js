@@ -630,6 +630,7 @@ function getBranchFromStudentId(studentId) {
 }
 
 function processAdminLogin() {
+    // แก้ไข: เปลี่ยนชื่อตัวแปรจาก input เป็น inputEl ให้ตรงกับที่เรียกใช้งานด้านล่าง
     const inputEl = document.getElementById("login-student-id");
     const errorEl = document.getElementById("login-error");
     const studentId = inputEl ? inputEl.value.trim() : "";
@@ -648,7 +649,9 @@ function processAdminLogin() {
     sessionStorage.setItem("admin_student_id", studentId);
     sessionStorage.setItem("admin_branch", branch);
 
-    document.getElementById("login-modal").style.display = "none";
+    const loginModal = document.getElementById("login-modal");
+    if (loginModal) loginModal.style.display = "none";
+    
     applyAdminBranch(branch);
 }
 
@@ -664,7 +667,7 @@ function applyAdminBranch(branch) {
     const filterSelect = document.getElementById("filter-branch-select");
     if (filterSelect) {
         filterSelect.value = branch;
-        filterSelect.disabled = true; //ล็อกไม่ให้เลือกสาขาอื่น
+        filterSelect.disabled = true; // ล็อกไม่ให้เลือกสาขาอื่น
     }
 
     const newBranchSelect = document.getElementById("new-branch-select");
@@ -697,6 +700,7 @@ function initAdminAuth() {
     }
 }
 
+// แก้ไข: ปรับการเรียกทำงานให้อยู่ในรูปแบบความปลอดภัยสูง ครอบคลุมทุกสภาวะการโหลด DOM
 if (document.readyState === "loading") {
     document.addEventListener("DOMContentLoaded", initAdminAuth);
 } else {
