@@ -975,7 +975,7 @@ body {
 
 /* ปุ่มสามขีด fixed มุมขวาบน */
 .menu-toggle-btn {
-    position: fixed;
+    position: absolute;
     top: 16px;
     right: 20px;
     z-index: 1000;
