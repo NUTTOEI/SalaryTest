@@ -3,7 +3,7 @@
     <head>
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <meta name="description" content="Comsci41">
+        <meta name="description" content="BWBS">
 <meta name="robots" content="index, follow">
 <meta name="google-site-verification" content="admin.html">
         <title>SCI Money</title>
@@ -17,7 +17,7 @@
             <div class="top-row">
                 <div style="flex: 1; min-width: 220px;">
                     <div class="eyebrow">กระดานเงินสาขา</div>
-                    <div class="title" id="branch-title" contenteditable="true" spellcheck="false">Comsci 42</div>
+                    <div class="title" id="branch-title" contenteditable="true" spellcheck="false">BWBS</div>
                     <a href="member.html" class="admin-link">หน้าสำหรับสมาชิก →</a>
                 </div>
                 <div class="rate-edit">
@@ -82,6 +82,10 @@
 
             <div class="add-member-row">
                 <input id="new-name-input" class="add-name-input" placeholder="เพิ่มรายชื่อ...">
+                <select id="new-branch-select" class="branch-select" style="padding: 8px; border-radius: 6px; border: 1px solid #ccc;">
+                    <option value="comsci41">comsci41</option>
+                    <option value="comsci42">comsci42</option>
+                </select>
                 <button id="add-member-btn" class="apply-rate-btn"><i class="ti ti-plus"></i> เพิ่มสมาชิก</button>
                 <button id="reset-all-btn" class="btn-danger" style="background-color: #eF4444; color: white; border: none; padding: 8px 16px; border-radius: 6px; cursor: pointer; font-family: inherit; font-size: 14px; display: inline-flex; align-items: center; gap: 6px;"><i class="ti ti-refresh"></i> รีเซ็ท</button>
                 <button id="export-excel-btn" class="export-excel-btn" type="button"><i class="ti ti-file-spreadsheet"></i> ส่งออก Excel</button>
@@ -92,6 +96,13 @@
                     <i class="ti ti-search"></i>
                     <input id="search-input" class="search" placeholder="ค้นหาสมาชิก...">
                 </div>
+
+                <select id="filter-branch-select" onchange="loadFromStorage()" style="padding: 6px 12px; border-radius: 6px; border: 1px solid #ccc;">
+                    <option value="">ทุกสาขา</option>
+                    <option value="comsci41">comsci41</option>
+                    <option value="comsci42">comsci42</option>
+                </select>
+
                 <div class="filter-group">
                     <button class="filter-btn active" data-filter="all">ทั้งหมด</button>
                     <button class="filter-btn" data-filter="paid">จ่ายแล้ว</button>

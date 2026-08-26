@@ -159,10 +159,17 @@ async function addMember(name) {
     const trimmed = name.trim();
     if (!trimmed) return;
 
+    const branchSelect = document.getElementById("new-branch-select");
+    const selectBranch = branchSelect ? branchSelect.value : "comsci41";
+
     await fetch("/api/admin/members", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ name: trimmed, amount: state.ratePreview })
+        body: JSON.stringify({ 
+            name: trimmed, 
+            amount: state.ratePreview,
+            branch: selectBranch
+        })
     });
 
     await loadFromStorage();
@@ -216,12 +223,13 @@ function renderRow(m, index) {
     const pill = `<span class="pill ${statusInfo.class}">${statusInfo.text}</span>`;
     const subText = statusInfo.subText;
     const historyCount = m.history ? m.history.length : 0;
+    const branchBadge = `<span style="font-size:11px; background:#e0e7ff; color:#3730a3; padding:2px 6px; border-radius:4px; margin-left:6px;">${m.branch || 'comsci41'}</span>`;
 
     return `
     <div class="member-row" data-toggle-id="${m.id}">
         <div class="m-avatar" style="background:${tint.bg};color:${tint.fg}">${displayNum}</div>
         <div class="m-text">
-            <div class="m-name">${m.name}</div>
+            <div class="m-name">${m.name} ${branchBadge}</div>
             <div class="m-sub">${subText}</div>
         </div>
         <div class="m-right">
@@ -233,7 +241,7 @@ function renderRow(m, index) {
             </button>
             
             <a href="detailmember.html?id=${m.id}" title="ดูรายละเอียด" onclick="event.stopPropagation();" style="display:flex; align-items:center; gap:4px; text-decoration: none; background:#EEF0FB; border:1px solid #C7CCEB; border-radius:6px; cursor:pointer; color:#4C5FD5; padding:4px 8px; font-size:12px; font-family:'Kanit'; white-space: nowrap;">
-                <i class="ti ti-calendar-event" style="font-size: 1.1rem;"></i> รายรายละเอียด
+                <i class="ti ti-calendar-event" style="font-size: 1.1rem;"></i> รายละเอียด
             </a>
 
             <button class="delete-btn" data-delete-id="${m.id}" title="ลบสมาชิก" style="background:none; border:none; cursor:pointer; color:#ff5252; padding:4px;">
@@ -433,7 +441,10 @@ async function loadFromStorage() {
             TARGET_AMOUNT = Number(targetData.target) || 4000;
         }
 
-        const response = await fetch("/api/members", { cache: "no-store" });
+        const branchFilter = document.getElementById("filter-branch-select")?.value;
+        const url = branchFilter ? `/api/members?branch=${branchFilter}` : "/api/members";
+
+        const response = await fetch(url, { cache: "no-store" });
         if (response.ok) {
             MEMBERS = await response.json();
         }

@@ -26,10 +26,11 @@ const LINE_ACCESS_TOKEN = process.env.LINE_ACCESS_TOKEN;
 const LINE_TARGET_IDS = [
     process.env.LINE_TARGET_ID,
     'Ufac721db10fe012f12410f3cf59c3eb7', // นัท ณัฐวัฒน์
+    'Ub0a8c9b3819bac10a968319bce489c2a' // สุพรรณณิกา คงคาศรี
     // 'Uf963df571b9d63db04690e4801fe1439' // ฟิล์ม ปุณณ์เมธ
    
 ]
-const EXPECTED_RECEIVER_NAME = "ปุณณ์เมธ ม่วงวิเชียร";
+const EXPECTED_RECEIVER_NAME = "สุพรรณณิกา คงคาศรี";
 
 const DEFAULT_MONTHS = () => Array(12).fill(false);
 const DEFAULT_WEEKS = () => Array(52).fill(false);
@@ -57,7 +58,16 @@ function rowToMember(row) {
 
 app.get('/api/members', async (req, res) => {
     try {
-        const [rows] = await pool.query('SELECT * FROM members');
+        const { branch } = req.query;
+        let sql = "SELECT * FROM members";
+        let params = [];
+
+        if (branch) {
+            sql += " WHERE branch = ?";
+            params.push(branch);
+        }
+
+        const [rows] = await pool.query(sql, params);
         res.json(rows.map(rowToMember));
     } catch (err) {
         console.error('GET /api/members error:', err);
@@ -67,37 +77,46 @@ app.get('/api/members', async (req, res) => {
 
 // GET /api/members — ที่ admin.js / member.js / pay.js เรียกทุกครั้งตอนโหลดหน้า
 app.put('/api/members/:id', async (req, res) => {
-    const { id } = req.params;
-    const { paidMonths, paidWeeks, history } = req.body;
     try {
+        const { id } = req.params;
+        const { name, branch, paidMonths, paidWeeks, history } = req.body;
+        
         await pool.query(
-            'UPDATE members SET paid_months = ?, paid_weeks = ?, history = ? WHERE id = ?',
+            `UPDATE members
+            SET name = COALESCE(?, name),
+                branch = COALESCE(?, branch),
+                paid_months = COALESCE(?, paid_months),
+                history = COALESCE(?, history)
+            WHERE id = ?`,
             [
-                JSON.stringify(paidMonths || DEFAULT_MONTHS()),
-                JSON.stringify(paidWeeks || DEFAULT_WEEKS()),
-                JSON.stringify(history || []),
+                name || null,
+                branch || null,
+                paidMonths ? JSON.stringify(paidMonths) : null,
+                history ? JSON.stringify(history) : null,
                 id
             ]
         );
-        res.json({ success: true, message: 'อัปเดตข้อมูลสำเร็จ' });
-    } catch (err) {
-        console.error('PUT /api/members/:id error:', err);
-        res.status(500).json({ status: 'error', message: err.message });
+
+        res.json({ status: "success", message: "Update successfully" });
+    } catch (error) {
+        res.status(500).json({ status: "error", message: error.message });
     }
 });
 
-// POST /api/admin/members — เพิ่มสมาชิกใหม่ { name, amount }
+// POST /api/admin/members — เพิ่มสมาชิกใหม่ { name, amount, branch }
 app.post('/api/admin/members', async (req, res) => {
     try {
-        const { name, amount } = req.body;
+        const { name, amount, branch } = req.body;
         if (!name || !String(name).trim()) {
             return res.status(400).json({ status: 'error', message: 'กรุณาระบุชื่อ' });
         }
         const rate = Number(amount) || 100;
+        const memberBranch = branch || 'comsci41';
+
         const [result] = await pool.query(
             `INSERT INTO members (branch, name, amount, paid_months, paid_weeks, history)
              VALUES (?, ?, ?, ?, ?, ?)`,
-            ['comsci41', String(name).trim(), rate, JSON.stringify(DEFAULT_MONTHS()), JSON.stringify(DEFAULT_WEEKS()), JSON.stringify([])]
+            ['memberBranch', String(name).trim(), rate, JSON.stringify(DEFAULT_MONTHS()), JSON.stringify(DEFAULT_WEEKS()), JSON.stringify([])]
         );
         const [rows] = await pool.query('SELECT * FROM members WHERE id = ?', [result.insertId]);
         res.json({ status: 'success', member: rowToMember(rows[0]) });
@@ -310,7 +329,8 @@ app.post('/verify-slip', upload.single('slip_image'), async (req, res) => {
         const receiverUpper = receiverName.toUpperCase();
 
         const ALLOWED_RECEIVERS = [
-            "ณัฐวัฒน์", "สุดพูล", "NATTHAWAT", "NATTAWAT", "SUDPOOL", "SUTPOOL",
+            // "ณัฐวัฒน์", "สุดพูล", "NATTHAWAT", "NATTAWAT", "SUDPOOL", "SUTPOOL",
+            "สุพรรณณิกา", "คงคาศรี", "SUPHANNIKA", "KHONGKASRI",
 
             // "ปุณณ์เมธ", "ม่วงวิเชียร", "PUNMETH", "PUNNAMET", "MUANGWICHIAN",
         ];
@@ -339,7 +359,7 @@ app.post('/verify-slip', upload.single('slip_image'), async (req, res) => {
         const messageText =
             `👥 ชื่อผู้โอน: ${transferorName || 'ไม่ระบุ'}\n` +
             `🔔 แจ้งเตือนได้รับการชำระเงินสำเร็จ!\n` +
-            `👤 ผู้รับ: ${slipData.receiver.name}\n` +
+            `👤 ผู้รับ: ${slipData.receiver?.name || 'ไม่ระบุ'}\n` +
             `💰 ยอดเงิน: ${slipData.amount} บาท\n` +
             `📄 เลขที่รายการ: ${transRef}\n` +
             `⏰ เวลาโอน: ${slipData.transDate} ${slipData.transTime}`;
