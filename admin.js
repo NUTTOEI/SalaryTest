@@ -706,3 +706,39 @@ if (document.readyState === "loading") {
 } else {
     initAdminAuth();
 }
+
+document.addEventListener("DOMContentLoaded", () => {
+    const toggleBtn = document.getElementById("menu-toggle-btn");
+    const closeBtn = document.getElementById("close-drawer-btn");
+    const drawer = document.getElementById("side-drawer");
+    const overlay = document.getElementById("menu-overlay");
+    const logoutBtn = document.getElementById("logout-btn");
+
+    function openMenu() {
+        if (drawer) drawer.classList.add("open");
+        if (overlay) overlay.classList.add("active");
+    }
+
+    function closeMenu() {
+        if (drawer) drawer.classList.remove("open");
+        if (overlay) overlay.classList.remove("active");
+    }
+
+    if (toggleBtn) toggleBtn.addEventListener("click", openMenu);
+    if (closeBtn) closeBtn.addEventListener("click", closeMenu);
+    if (overlay) overlay.addEventListener("click", closeMenu);
+
+    // ระบบออกจากระบบ (Logout)
+    if (logoutBtn) {
+        logoutBtn.addEventListener("click", () => {
+            if (confirm("คุณต้องการออกจากระบบหรือไม่?")) {
+                // ลบการยืนยันตัวตนออกจาก Session
+                sessionStorage.removeItem("admin_student_id");
+                sessionStorage.removeItem("admin_branch");
+                
+                // โหลดหน้าใหม่เพื่อกลับสู่หน้าเข้าสู่ระบบ
+                location.reload();
+            }
+        });
+    }
+});
