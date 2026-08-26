@@ -737,3 +737,24 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 });
 
+document.addEventListener("DOMContentLoaded", () => {
+    const menuBtn = document.getElementById("menu-toggle-btn");
+    const closeBtn = document.getElementById("close-drawer-btn");
+    const drawer = document.getElementById("side-drawer");
+    const overlay = document.getElementById("menu-overlay");
+
+    function openDrawer() {
+        drawer?.classList.add("open");
+        overlay?.classList.add("active");
+    }
+
+    function closeDrawer() {
+        drawer?.classList.remove("open");
+        overlay?.classList.remove("active");
+    }
+
+    menuBtn?.addEventListener("click", openDrawer);
+    closeBtn?.addEventListener("click", closeDrawer);
+    overlay?.addEventListener("click", closeDrawer);
+});
+

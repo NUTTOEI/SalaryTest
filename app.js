@@ -255,7 +255,7 @@ app.put('/api/admin/members/amount-all', async (req, res) => {
     try {
         const rate = Number(req.body.amount);
         if (!isFinite(rate) || rate < 0) {
-            return res.status(400).json({ status: 'error', message: 'ยอดเงินไม่ถูกต้องๅ' });
+            return res.status(400).json({ status: 'error', message: 'ยอดเงินไม่ถูกต้องง' });
         }
         await pool.query('UPDATE members SET amount = ?', [rate]);
         res.json({ status: 'success' });
