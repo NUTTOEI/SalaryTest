@@ -1154,6 +1154,21 @@ body {
 }
 .btn-secondary:hover { background: #e2e8f0; }
 
+.btn-danger {
+    flex: 1;
+    padding: 10px 16px;
+    background: #ef4444;
+    color: #ffffff;
+    border: none;
+    border-radius: 8px;
+    font-family: inherit;
+    font-size: 14px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: background 0.2s;
+}
+.btn-danger:hover { background: #dc2626; }
+
   
     
     
