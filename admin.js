@@ -630,7 +630,7 @@ function getBranchFromStudentId(studentId) {
 }
 
 function processAdminLogin() {
-    const input = document.getElementById("login-student-id");
+    const inputEl = document.getElementById("login-student-id");
     const errorEl = document.getElementById("login-error");
     const studentId = inputEl ? inputEl.value.trim() : "";
 
@@ -697,4 +697,8 @@ function initAdminAuth() {
     }
 }
 
-document.addEventListener("DOMContentLoaded", initAdminAuth);
+if (document.readyState === "loading") {
+    document.addEventListener("DOMContentLoaded", initAdminAuth);
+} else {
+    initAdminAuth();
+}
