@@ -817,3 +817,56 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 });
 
+document.addEventListener('DOMContentLoaded', () => {
+    const openSettingBtn = document.getElementById('open-setting-btn');
+    const closeSettingsBtn = document.getElementById('close-setting-btn');
+    const settingsModal = document.getElementById('settings-modal');
+    const avatarInput = document.getElementById('avatar-file-input');
+    const settingPreview = document.getElementById('settings-avatar-preview');
+    const mainAvatar = document.getElementById('branch-avatar-img');
+    const saveAvatarBtn = document.getElementById('save-avatar-btn');
+
+    if (openSettingsBtn && settingsModal) {
+        openSettingsBtn.addEventListener('click', () => {
+            if (settingsPreview && mainAvatar) {
+                settingPreview.src = mainAvatar.src;
+            }
+            settingsModal.style.display = 'flex';
+        });
+    }
+
+    if (closeSettingsBtn && settingsModal) {
+        closeSettingsBtn.addEventListener('click', () => {
+            settingsModal.style.display = 'none';
+        });
+    }
+
+    if (avatarInput) {
+        avatarInput.addEventListener('change', function(e) {
+            const file = e.target.files[0];
+            if (file) {
+                if (file.size > 2 * 1024 * 1024) {
+                    alert('ขนาดไฟล์ต้องไม่เกิน 2MB');
+                    avatarInput.value = '';
+                    return;
+                }
+                const reader = new FileReader();
+                reader.onload = function(evt) {
+                    settingPreview.src = evt.target.result;
+                };
+                reader.readAsDataURL(file);
+            }
+        });
+    }
+
+    if (saveAvatarBtn) {
+        saveAvatarBtn.addEventListener('click', () => {
+            if (mainAvatar && settingPreview) {
+                mainAvatar.src = settingPreview.src;
+            }
+            settingsModal.style.display = 'none';
+            alert('บันทึกรูปโปรไฟล์เรียบร้อยแล้ว');
+        });
+    }
+});
+

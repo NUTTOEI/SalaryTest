@@ -26,29 +26,58 @@
     <div id="side-drawer" class="side-drawer">
         <div class="drawer-header">
             <h3>MENU</h3>
-            <button id="close-drawer-btn" class="close-btn">&times;</button>
-    </div>
-    <div class="drawer-body">
-
-        <div class="branch-profile-card">
-            <div class="profile-title">รูปโปรไฟล์</div>
-            <div class="avatar-wrapper">
-                <img id="branchImgPreview" src="uploads/default-branch.png" alt="Branch Profile">
-                <label for="branchImgInput" class="upload-btn-overlay">เปลี่ยนรูป</label>
-            </div>
-            <div class="hint-text">รองรับ JPG, PNG (ขนาดไม่เกิน 2MB)</div>
-            <input type="file" id="branchImgInput" accept="image/*" style="display: none;">
-            <button type="button" class="btn-save" id="btn-save-branch-img" onclick="uploadBranchProfile()">บันทึกรูปภาพ</button>
+            <button class="close-btn" id="close-drawer-btn">$times</button>
         </div>
-
+    <div class="drawer-body">
+        <div class="drawer-profile-display">
+            <div class="avatar-circle">
+                <img id="branch-avatar-img" src="upload/default-branch.png" alt="Branch Profile" onerror="this.src='https://via.placeholder.com/150';">
+            </div>
+        </div>
         <hr class="drawer-divider">
 
+        <div class="drawer-menu-list">
+            <button type="button" class="drawer-menu-item" id="open-setting-btn">
+                <i class="ri-setting-3-line"></i> ตั้งค่าโปรไฟล์
+            </button>
+        </div>
+
         <button id="logout-btn" class="logout-btn">
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path><polyline points="16 17 21 12 16 7"></polyline><line x1="21" y1="12" x2="9" y2="12"></line></svg>
-            ออกจากระบบ
+          <i class="ri-logout-box-r-line"></i> ออกจากระบบ
         </button>
     </div>
 </div>
+
+    <div id="setting-modal" class="modal-overlay" style="display: none;">
+        <div class="modal-card">
+            <div class="modal-header">
+                <div class="mpdal-icon target">
+                    <i class="ri-setting-3-line"></i>
+                </div>
+                <div class="modal-title">ตั้งค่าโปรไฟล์</div>
+                <div class="modal-sub">เปลี่ยนรูปภาพโปรไฟล์</div>
+            </div>
+        </div>
+
+        <div class="modal-body" style="text-align: center;">
+            <label for="avatar-file-input" class="avatar-upload-label">
+                <div class="avatar-wrapper">
+                    <img id="setting-avatar-preview" src="uploads/default-branch.png" alt="Preview" onerror="this.src='https://via.placeholder.com/150';">
+                    <div class="upload-btn-overlay">
+                        <i class="ri-camera-line"></i> เลือกรูป
+                    </div>
+                </div>
+            </label>
+            <input type="file" id="avatar-file-input" accept="image/png, image/jpeg" style="display: none;">
+            <div class="hint-text" style="margin-top: 10px;">รองรับ JPG, PNG (ขนาดไม่เกิน 2MB)</div>
+        </div>
+
+        <div class="modal-footer">
+            <button type="button" class="btn-modal-cancel" id="close-setting-btn">ยกเลิก</button>
+            <button type="button" class="btn-modal-save" id="save-avatar-btn">บันทึกรูปภาพ</button>
+        </div>
+    </div>
+
         <div class="page">
             <div class="top-row">
                 <div style="flex: 1; min-width: 220px;">
