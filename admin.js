@@ -27,7 +27,12 @@ function exportMembersToExcel() {
     }
 
     const rows = MEMBERS.map((member, index) => {
-        const paidMonths = Array.isArray(member.paidMonths) ? member.paidMonths : [];
+        let paidMonths = [];
+        if (Array.isArray(member.paidMonths)) {
+            paidMonths = member.paidMonths;
+        } else if (typeof member.paidMonths === "string") {
+            try { paidMonths = JSON.parse(member.paidMonths); } catch (e) { paidMonths = []; }
+        }
         return {
             "ลำดับ": index + 1,
             "ชื่อสมาชิก": member.name || "",
@@ -50,19 +55,26 @@ function exportMembersToExcel() {
     XLSX.writeFile(workbook, `รายชื่อสมาชิก-${new Date().toISOString().slice(0, 10)}.xlsx`);
 }
 
-let selectedAdminMonth = new Date().getMonth();
 let state = { query: "", filter: "all", sort: "index", ratePreview: 100 };
+
+function parseArrayField(field, defaultLen = 12) {
+    if (Array.isArray(field)) return field;
+    if (typeof field === "string") {
+        try { return JSON.parse(field); } catch (e) { }
+    }
+    return Array(defaultLen).fill(false);
+}
 
 function isMemberPaidCurrent(m) {
     const mode = localStorage.getItem("fund-dashboard-mode") || "month";
     if (mode === "month") {
         const currentMonth = getActiveMonthIndex();
-        const paidMonths = m.paidMonths || Array(12).fill(false);
+        const paidMonths = parseArrayField(m.paidMonths, 12);
         return Boolean(paidMonths[currentMonth]);
     } else {
         const activeWeek = Number(localStorage.getItem("fund-dashboard-active-week")) || 0;
         const totalWeeks = typeof WEEKS_LIST !== "undefined" ? WEEKS_LIST.length : 52;
-        const paidWeeks = m.paidWeeks || Array(totalWeeks).fill(false);
+        const paidWeeks = parseArrayField(m.paidWeeks, totalWeeks);
         return Boolean(paidWeeks[activeWeek]);
     }
 }
@@ -76,10 +88,11 @@ function computeStats() {
     const collected = MEMBERS.reduce((sum, m) => {
         const rate = Number(m.amount) || 100;
         if (mode === "month") {
-            const paidMonthsCount = (m.paidMonths || []).filter(Boolean).length;
+            const paidMonthsCount = parseArrayField(m.paidMonths, 12).filter(Boolean).length;
             return sum + (paidMonthsCount * rate); 
         } else {
-            const paidWeeksCount = (m.paidWeeks || []).filter(Boolean).length;
+            const totalWeeks = typeof WEEKS_LIST !== "undefined" ? WEEKS_LIST.length : 52;
+            const paidWeeksCount = parseArrayField(m.paidWeeks, totalWeeks).filter(Boolean).length;
             return sum + (paidWeeksCount * rate);
         }
     }, 0);
@@ -108,13 +121,16 @@ async function togglePaid(id) {
     const currentMonth = getActiveMonthIndex();
     const activeWeek = Number(localStorage.getItem("fund-dashboard-active-week")) || 0;
 
-    await fetch("/api/admin/toggle-paid", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ memberId: id, mode, monthIndex: currentMonth, weekIndex: activeWeek })
-    });
-
-    await loadFromStorage();
+    try {
+        await fetch("/api/admin/toggle-paid", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ memberId: id, mode, monthIndex: currentMonth, weekIndex: activeWeek })
+        });
+        await loadFromStorage();
+    } catch (err) {
+        console.error("Error toggling paid state:", err);
+    }
 }
 
 function openResetModal() {
@@ -128,9 +144,14 @@ function closeResetModal() {
 }
 
 async function resetAllPayments() {
-    await fetch("/api/admin/reset", { method: "POST" });
-    await loadFromStorage();
-    closeResetModal();
+    try {
+        await fetch("/api/admin/reset", { method: "POST" });
+        await loadFromStorage();
+    } catch (err) {
+        console.error("Error resetting payments:", err);
+    } finally {
+        closeResetModal();
+    }
 }
 
 function setFilter(f) { state.filter = f; render(); }
@@ -141,7 +162,6 @@ function setRatePreview(v) {
     state.ratePreview = isFinite(n) && n >= 0 ? n : state.ratePreview;
 }
 
-// อัปเดตยอดเงินทุกคนผ่าน API
 async function applyRateToAll() {
     try {
         await fetch('/api/admin/members/amount-all', {
@@ -162,23 +182,30 @@ async function addMember(name) {
     const branchSelect = document.getElementById("new-branch-select");
     const selectBranch = branchSelect ? branchSelect.value : "comsci41";
 
-    await fetch("/api/admin/members", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ 
-            name: trimmed, 
-            amount: state.ratePreview,
-            branch: selectBranch
-        })
-    });
-
-    await loadFromStorage();
+    try {
+        await fetch("/api/admin/members", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ 
+                name: trimmed, 
+                amount: state.ratePreview,
+                branch: selectBranch
+            })
+        });
+        await loadFromStorage();
+    } catch (err) {
+        console.error("Error adding member:", err);
+    }
 }
 
 async function deleteMember(id) {
     if (confirm("ลบรายชื่อนี้?")) {
-        await fetch(`/api/admin/members/${id}`, { method: "DELETE" });
-        await loadFromStorage();
+        try {
+            await fetch(`/api/admin/members/${id}`, { method: "DELETE" });
+            await loadFromStorage();
+        } catch (err) {
+            console.error("Error deleting member:", err);
+        }
     }
 }
 
@@ -241,7 +268,7 @@ function renderRow(m, index) {
             </button>
             
             <a href="detailmember.html?id=${m.id}" title="ดูรายละเอียด" onclick="event.stopPropagation();" style="display:flex; align-items:center; gap:4px; text-decoration: none; background:#EEF0FB; border:1px solid #C7CCEB; border-radius:6px; cursor:pointer; color:#4C5FD5; padding:4px 8px; font-size:12px; font-family:'Kanit'; white-space: nowrap;">
-                <i class="ti ti-calendar-event" style="font-size: 1.1rem;"></i> รายรายละเอียด
+                <i class="ti ti-calendar-event" style="font-size: 1.1rem;"></i> รายละเอียด
             </a>
 
             <button class="delete-btn" data-delete-id="${m.id}" title="ลบสมาชิก" style="background:none; border:none; cursor:pointer; color:#ff5252; padding:4px;">
@@ -360,7 +387,6 @@ document.addEventListener("focusout", (e) => {
 
 document.addEventListener("keydown", (e) => {
     const targetModal = document.getElementById("target-modal");
-    const resetModal = document.getElementById("reset-modal");
 
     if (e.key === "Escape") {
         closeTargetModal();
@@ -375,33 +401,36 @@ document.addEventListener("keydown", (e) => {
     }
 });
 
-if (document.getElementById("search-input")) {
-    document.getElementById("search-input").addEventListener("input", (e) => setQuery(e.target.value));
-}
-if (document.getElementById("rate-input")) {
-    document.getElementById("rate-input").addEventListener("input", (e) => setRatePreview(e.target.value));
-}
-if (document.getElementById("apply-rate-btn")) {
-    document.getElementById("apply-rate-btn").addEventListener("click", applyRateToAll);
-}
+document.addEventListener("DOMContentLoaded", () => {
+    const searchInput = document.getElementById("search-input");
+    const rateInput = document.getElementById("rate-input");
+    const applyRateBtn = document.getElementById("apply-rate-btn");
+    const addBtn = document.getElementById("add-member-btn");
+    const nameInput = document.getElementById("new-name-input");
+    const exportExcelBtn = document.getElementById("export-excel-btn");
+    const statTargetBtn = document.getElementById("stat-target");
 
-const addBtn = document.getElementById("add-member-btn");
-const nameInput = document.getElementById("new-name-input");
-if (addBtn && nameInput) {
-    addBtn.addEventListener("click", () => {
-        addMember(nameInput.value);
-        nameInput.value = "";
-        nameInput.focus();
-    });
-    nameInput.addEventListener("keydown", (e) => {
-        if (e.key === "Enter") {
-            e.preventDefault();
-            addBtn.click();
-        }
-    });
-}
+    if (searchInput) searchInput.addEventListener("input", (e) => setQuery(e.target.value));
+    if (rateInput) rateInput.addEventListener("input", (e) => setRatePreview(e.target.value));
+    if (applyRateBtn) applyRateBtn.addEventListener("click", applyRateToAll);
 
-document.getElementById("export-excel-btn")?.addEventListener("click", exportMembersToExcel);
+    if (addBtn && nameInput) {
+        addBtn.addEventListener("click", () => {
+            addMember(nameInput.value);
+            nameInput.value = "";
+            nameInput.focus();
+        });
+        nameInput.addEventListener("keydown", (e) => {
+            if (e.key === "Enter") {
+                e.preventDefault();
+                addBtn.click();
+            }
+        });
+    }
+
+    if (exportExcelBtn) exportExcelBtn.addEventListener("click", exportMembersToExcel);
+    if (statTargetBtn) statTargetBtn.addEventListener("click", openTargetModal);
+});
 
 function viewHistory(memberId) {
    const member = MEMBERS.find(m => Number(m.id) === Number(memberId));
@@ -411,12 +440,17 @@ function viewHistory(memberId) {
 
    const listEl = document.getElementById("modal-history-list");
    if (listEl) {
-    listEl.innerHTML = "";
-        if (member.history && member.history.length > 0) {
-            member.history.forEach((h, index) => {
+        listEl.innerHTML = "";
+        let history = member.history;
+        if (typeof history === "string") {
+            try { history = JSON.parse(history); } catch(e) { history = []; }
+        }
+
+        if (Array.isArray(history) && history.length > 0) {
+            history.forEach((h, index) => {
                 const li = document.createElement("li");
                 li.style.marginBottom = "8px";
-                li.innerText = `ครั้งที่ ${index + 1}: วันที่ ${h.date} - ชำระ ${safeFmtMoney(h.amount)} (${h.method || 'โอนเงิน'})`;
+                li.innerText = `ครั้งที่ ${index + 1}: วันที่ ${h.date || '-'} - ชำระ ${safeFmtMoney(h.amount)} (${h.method || 'โอนเงิน'})`;
                 listEl.appendChild(li);
             });
         } else {
@@ -450,7 +484,7 @@ async function loadFromStorage() {
         }
         render();
     } catch (e) {
-        console.error("ดึงข้อมูลจาก MySQL ล้มเหลว:", e);
+        console.error("ดึงข้อมูลจาก Server/MySQL ล้มเหลว:", e);
     }
 }
 
@@ -458,7 +492,7 @@ function openTargetModal() {
     const modal = document.getElementById("target-modal");
     const input = document.getElementById("target-modal-input");
     if (modal && input) {
-        input.value = typeof getTargetData === "function" ? getTargetData() : TARGET_AMOUNT;
+        input.value = TARGET_AMOUNT;
         modal.style.display = "flex";
         setTimeout(() => {
             input.focus();
@@ -506,10 +540,6 @@ async function saveTargetAmount() {
     }
 }
 
-if (document.getElementById("stat-target")) {
-    document.getElementById("stat-target").addEventListener("click", openTargetModal);
-}
-
 function getCollectionMode() {
     return localStorage.getItem("fund-dashboard-mode") || "month";
 }
@@ -542,7 +572,7 @@ function getMemberStatus(m) {
 
     if (mode === "month") {
         const currentMonth = typeof getActiveMonthIndex === "function" ? getActiveMonthIndex() : new Date().getMonth();
-        const paidMonths = m.paidMonths || Array(12).fill(false);
+        const paidMonths = parseArrayField(m.paidMonths, 12);
 
         if (paidMonths[currentMonth]) {
             return {
@@ -562,7 +592,7 @@ function getMemberStatus(m) {
     } else {
         const activeWeek = typeof getActiveWeekIndex === "function" ? getActiveWeekIndex() : Number(localStorage.getItem("fund-dashboard-active-week")) || 0;
         const totalWeeks = typeof WEEKS_LIST !== "undefined" ? WEEKS_LIST.length : 52;
-        const paidWeeks = m.paidWeeks || Array(totalWeeks).fill(false);
+        const paidWeeks = parseArrayField(m.paidWeeks, totalWeeks);
 
         if (paidWeeks[activeWeek]) {
             return {
@@ -580,12 +610,6 @@ function getMemberStatus(m) {
             subText: `ยอดชำระประจำสัปดาห์ ${safeFmtMoney(m.amount)} บาท`
         };
     }
-}
-
-if (document.readyState === "loading") {
-    document.addEventListener("DOMContentLoaded", initAdminApp);
-} else {
-    initAdminApp();
 }
 
 function loadBranchTitle() {
@@ -617,7 +641,6 @@ function setupBranchTitle() {
     });
 }
 
-
 // เข้าสู่ระบบแอดมินผ่าน MySQL
 async function processAdminLogin() {
     const inputEl = document.getElementById("login-student-id");
@@ -638,13 +661,13 @@ async function processAdminLogin() {
         const data = await response.json();
 
         if (!data.success) {
-            showLoginError(data.message);
+            showLoginError(data.message || "ไม่พบรหัสนักศึกษา");
             return;
         }
 
         sessionStorage.setItem("admin_student_id", data.studentId);
         sessionStorage.setItem("admin_branch", data.branch);
-        sessionStorage.setItem("admin_name", data.name);
+        sessionStorage.setItem("admin_name", data.name || "");
 
         const loginModal = document.getElementById("login-modal");
         const mainDashboard = document.getElementById("main-dashboard");
@@ -694,9 +717,9 @@ async function processAdminRegister() {
             if (document.getElementById("login-student-id")) {
                 document.getElementById("login-student-id").value = studentId;
             }
-            toggleAuthView('login'); // สลับกลับหน้า Login
+            toggleAuthView('login');
         } else {
-            alert("ลงทะเบียนไม่สำเร็จ: " + data.message);
+            alert("ลงทะเบียนไม่สำเร็จ: " + (data.message || "เกิดข้อผิดพลาด"));
         }
     } catch (err) {
         alert("เกิดข้อผิดพลาดในการเชื่อมต่อเซิร์ฟเวอร์");
@@ -705,17 +728,16 @@ async function processAdminRegister() {
 
 function showLoginError(msg) {
     const errorEl = document.getElementById("login-error");
-    if (errorEl) {
-        errorEl.textContent = msg;
-        errorEl.style.display = "block";
-    }
+    const textEl = document.getElementById("login-error-text");
+    if (textEl) textEl.textContent = msg;
+    if (errorEl) errorEl.style.display = "flex";
 }
 
 function applyAdminBranch(branch) {
     const filterSelect = document.getElementById("filter-branch-select");
     if (filterSelect) {
         filterSelect.value = branch;
-        filterSelect.disabled = true; // ล็อกไม่ให้เลือกสาขาอื่น
+        filterSelect.disabled = true;
     }
 
     const newBranchSelect = document.getElementById("new-branch-select");
@@ -752,13 +774,51 @@ function initAdminAuth() {
     }
 }
 
-if (document.readyState === "loading") {
-    document.addEventListener("DOMContentLoaded", initAdminAuth);
-} else {
-    initAdminAuth();
+async function loadBranchAvatar(branch) {
+    if (!branch) return;
+    try {
+        const response = await fetch(`/api/branch/profile?branch=${branch}`);
+        if (response.ok) {
+            const data = await response.json();
+            if (data.avatarUrl) {
+                const avatarImg = document.getElementById('branch-avatar-img');
+                const settingImg = document.getElementById('settings-avatar-preview');
+                const timestampedUrl = `${data.avatarUrl}?t=${Date.now()}`;
+                if (avatarImg) avatarImg.src = timestampedUrl;
+                if (settingImg) settingImg.src = timestampedUrl;
+            }
+        }
+    } catch (err) {
+        console.error("ไม่สามารถดึงรูปโปรไฟล์สาขาได้:", err);
+    }
 }
 
-document.addEventListener("DOMContentLoaded", () => {
+// Event Listeners สำหรับ UI Components
+document.addEventListener('DOMContentLoaded', () => {
+    initAdminApp();
+    initAdminAuth();
+
+    // Drawer Menu & Overlay
+    const menuBtn = document.getElementById("menu-toggle-btn");
+    const closeBtn = document.getElementById("close-drawer-btn");
+    const drawer = document.getElementById("side-drawer");
+    const overlay = document.getElementById("menu-overlay");
+
+    function openDrawer() {
+        drawer?.classList.add("open");
+        overlay?.classList.add("active");
+    }
+
+    function closeDrawer() {
+        drawer?.classList.remove("open");
+        overlay?.classList.remove("active");
+    }
+
+    menuBtn?.addEventListener("click", openDrawer);
+    closeBtn?.addEventListener("click", closeDrawer);
+    overlay?.addEventListener("click", closeDrawer);
+
+    // Logout Modal
     const logoutBtn = document.getElementById("logout-btn");
     const logoutModal = document.getElementById("logout-confirm-modal");
     const cancelLogoutBtn = document.getElementById("cancel-logout-btn");
@@ -780,80 +840,12 @@ document.addEventListener("DOMContentLoaded", () => {
         confirmLogoutBtn.addEventListener("click", () => {
             sessionStorage.removeItem("admin_student_id");
             sessionStorage.removeItem("admin_branch");
+            sessionStorage.removeItem("admin_name");
             location.reload();
         });
     }
-});
 
-document.addEventListener("DOMContentLoaded", () => {
-    const menuBtn = document.getElementById("menu-toggle-btn");
-    const closeBtn = document.getElementById("close-drawer-btn");
-    const drawer = document.getElementById("side-drawer");
-    const overlay = document.getElementById("menu-overlay");
-
-    function openDrawer() {
-        drawer?.classList.add("open");
-        overlay?.classList.add("active");
-    }
-
-    function closeDrawer() {
-        drawer?.classList.remove("open");
-        overlay?.classList.remove("active");
-    }
-
-    menuBtn?.addEventListener("click", openDrawer);
-    closeBtn?.addEventListener("click", closeDrawer);
-    overlay?.addEventListener("click", closeDrawer);
-});
-
-// จัดการรูปตัวอย่างสาขา (แก้ไขการปิดวงเล็บสมบูรณ์)
-document.addEventListener('DOMContentLoaded', () => {
-    const branchImgInput = document.getElementById('branchImgInput');
-    const branchProfileImg = document.getElementById('branchProfileImg');
-    const btnSaveBranchImg = document.getElementById('btnSaveBranchImg');
-
-    if (branchImgInput && branchProfileImg && btnSaveBranchImg) {
-        let selectedFile = null;
-
-        branchImgInput.addEventListener('change', (e) => {
-            const file = e.target.files[0];
-            if (file) {
-                if (file.size > 2 * 1024 * 1024) {
-                    alert('ขนาดไฟล์ต้องไม่เกิน 2MB');
-                    branchImgInput.value = '';
-                    return;
-                }
-
-                selectedFile = file;
-                branchProfileImg.src = URL.createObjectURL(file);
-                btnSaveBranchImg.style.display = 'inline-block';
-            }
-        });
-    }
-});
-
-// ดึงรูปโปรไฟล์สาขามาแสดง
-async function loadBranchAvatar(branch) {
-    if (!branch) return;
-    try {
-        const response = await fetch(`/api/branch/profile?branch=${branch}`);
-        if (response.ok) {
-            const data = await response.json();
-            if (data.avatarUrl) {
-                const timestampedUrl = `${data.avatarUrl}?t=${Date.now()}`;
-                const avatarImg = document.getElementById('branch-avatar-img');
-                const settingImg = document.getElementById('settings-avatar-preview') || document.getElementById('setting-avatar-preview');
-                if (avatarImg) avatarImg.src = data.avatarUrl;
-                if (settingImg) settingImg.src = data.avatarUrl;
-            }
-        }
-    } catch (err) {
-        console.error("ไม่สามารถดึงรูปโปรไฟล์สาขาได้:", err);
-    }
-}
-
-// จัดการการอัปโหลดรูปโปรไฟล์สาขาผ่าน Modal Settings
-document.addEventListener('DOMContentLoaded', () => {
+    // Settings Profile Image Upload Modal
     const openSettingBtn = document.getElementById('open-setting-btn');
     const closeSettingsBtn = document.getElementById('close-setting-btn');
     const settingsModal = document.getElementById('settings-modal');
@@ -916,22 +908,18 @@ document.addEventListener('DOMContentLoaded', () => {
             const result = await response.json();
 
             if (result.success) {
-                alert('บันทึกรูปโปรไฟล์สาขาเรียบร้อยแล้ว');
                 const updatedUrl = `${result.avatarUrl}?t=${Date.now()}`;
                 if (mainAvatar) mainAvatar.src = updatedUrl;
                 selectedFile = null;
                 showSuccess("เปลี่ยนรูปโปรไฟล์สำเร็จ!");
             } else {
                 hideLoading();
-                alert('เกิดข้อผิดพลาด: ' + result.message);
+                alert('เกิดข้อผิดพลาด: ' + (result.message || 'ไม่สามารถอัปโหลดได้'));
             }
         } catch (error) {
             console.error('Upload Error:', error);
             hideLoading();
             alert('ไม่สามารถเชื่อมต่อกับเซิร์ฟเวอร์ได้');
-        } finally {
-            saveAvatarBtn.disabled = false;
-            saveAvatarBtn.innerText = 'บันทึกรูปภาพ';
         }
     });
 });
@@ -946,8 +934,8 @@ function showLoading(message = "กำลังโหลดข้อมูล...
     if (!modal) return;
     if (loadingText) loadingText.textContent = message;
     
-    spinnerBox.style.display = "block";
-    successBox.style.display = "none";
+    if (spinnerBox) spinnerBox.style.display = "block";
+    if (successBox) successBox.style.display = "none";
     modal.style.display = "flex";
 }
 
@@ -961,17 +949,17 @@ function showSuccess(message = "สำเร็จ!", duration = 1400, callback 
     if (!modal) return;
 
     if (successText) successText.textContent = message;
-    spinnerBox.style.display = "none";
+    if (spinnerBox) spinnerBox.style.display = "none";
     
-    // แสดง Success Box และ Re-trigger แอนิเมชัน SVG
-    successBox.style.display = "block";
-    const svg = successBox.querySelector('.checkmark-svg');
-    if (svg) {
-        const newSvg = svg.cloneNode(true);
-        svg.parentNode.replaceChild(newSvg, svg);
+    if (successBox) {
+        successBox.style.display = "block";
+        const svg = successBox.querySelector('.checkmark-svg');
+        if (svg) {
+            const newSvg = svg.cloneNode(true);
+            svg.parentNode.replaceChild(newSvg, svg);
+        }
     }
 
-    // ซ่อน Modal เมื่อครบกำหนดเวลา
     setTimeout(() => {
         modal.style.display = "none";
         if (typeof callback === "function") callback();

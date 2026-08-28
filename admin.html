@@ -116,14 +116,18 @@
                     <circle cx="64" cy="64" r="52" fill="none" stroke="#EEF0FB" stroke-width="12"/>
                     <circle id="progress-ring-fg" cx="64" cy="64" r="52" fill="none" stroke="#4C5FD5" stroke-width="12" stroke-linecap="round" transform="rotate(-90 64 64)"/>
                 </svg>
-                <div class="ring-pct" id="progress-pct"></div>
+                <div class="ring-pct" id="progress-pct">0%</div>
             </div>
             <div class="hero-figures">
                 <div class="hero-row">
-                    <div><div class="hero-label">เก็บได้แล้ว</div><div class="hero-value" id="stat-collected"></div></div>
-                    <div style="text-align: right"><div class="hero-label">เป้าหมาย</div>
-                    <div class="hero-value small" id="stat-target" style="cursor: pointer;" title="คลิกเพื่อตั้งเป้าหมาย"></div>
-                </div>
+                    <div>
+                        <div class="hero-label">เก็บได้แล้ว</div>
+                        <div class="hero-value" id="stat-collected">฿0</div>
+                    </div>
+                    <div style="text-align: right">
+                        <div class="hero-label">เป้าหมาย</div>
+                        <div class="hero-value small" id="stat-target" style="cursor: pointer;" title="คลิกเพื่อตั้งเป้าหมาย">฿0</div>
+                    </div>
                 </div>
                 <div class="summary"><i class="ti ti-info-circle"></i><span id="summary-line"></span></div>
                 <div class="summary-projected" id="summary-projected"></div>
@@ -135,22 +139,22 @@
                 <div class="stat-icon">
                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 7m-4 0a4 4 0 1 0 8 0a4 4 0 1 0 -8 0"></path><path d="M3 21v-2a4 4 0 0 1 4 -4h4a4 4 0 0 1 4 4v2"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path><path d="M21 21v-2a4 4 0 0 0 -3 -3.85"></path></svg>
                 </div>
-                <div><div class="stat-label">สมาชิกทั้งหมด</div><div class="stat-value" id="stat-total"></div></div>
+                <div><div class="stat-label">สมาชิกทั้งหมด</div><div class="stat-value" id="stat-total">0</div></div>
             </div>
             <div class="stat-card paid">
                 <div class="stat-icon"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 12m-9 0a9 9 0 1 0 18 0a9 9 0 1 0 -18 0"></path><path d="M9 12l2 2l4 -4"></path></svg>
             </div>
-                <div><div class="stat-label">จ่ายแล้ว</div><div class="stat-value" id="stat-paid"></div></div>
+                <div><div class="stat-label">จ่ายแล้ว</div><div class="stat-value" id="stat-paid">0</div></div>
             </div>
             <div class="stat-card unpaid">
                 <div class="stat-icon"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12a9 9 0 1 0 18 0a9 9 0 0 0 -18 0"></path><path d="M12 7v5l3 3"></path></svg>
             </div>
-                <div><div class="stat-label">ยังไม่จ่าย</div><div class="stat-value" id="stat-unpaid"></div></div>
+                <div><div class="stat-label">ยังไม่จ่าย</div><div class="stat-value" id="stat-unpaid">0</div></div>
             </div>
         </div>
 
         <div class="add-member-row">
-            <input id="new-name-input" class="add-name-input" placeholder="เพิ่มรายชื่อ..." >
+            <input id="new-name-input" class="add-name-input" placeholder="เพิ่มรายชื่อ...">
             <select id="new-branch-select" class="branch-select" style="padding: 8px; border-radius: 6px; border: 1px solid #ccc;">
                 <option value="comsci41">comsci41</option>
                 <option value="BWBS">BWBS</option>
@@ -219,7 +223,7 @@
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn-modal-cancel" onclick="closeTargetModal()">ยกเลิก</button>
-                <button type="button" class="btn-modal-save" id="btn-save-target">บันทึกเป้าหมายเงินสาขาสำเร็จ</button>
+                <button type="button" class="btn-modal-save" id="btn-save-target">บันทึกเป้าหมาย</button>
             </div>
         </div>
     </div>
@@ -250,109 +254,108 @@
     </div>
 
     <!-- Modal ยืนยันตัวตน Admin -->
-<div id="login-modal" class="modal-overlay">
-    <div class="modal-card">
-        
-        <!-- หน้าเข้าสู่ระบบ -->
-        <div id="auth-login-box">
-            <div class="modal-header">
-                <div class="modal-icon target">
-                    <i class="ti ti-shield-lock"></i>
-                </div>
-                <div>
-                    <div class="modal-title">เข้าสู่ระบบแอดมิน</div>
-                    <div class="modal-sub">กรอกรหัสนักศึกษาเพื่อเข้าสู่ระบบจัดการ</div>
-                </div>
-            </div>
-
-            <div class="modal-body">
-                <div class="auth-field">
-                    <label for="login-student-id" class="auth-label">รหัสนักศึกษา</label>
-                    <div class="auth-input-wrap">
-                        <i class="ti ti-id"></i>
-                        <input type="text" id="login-student-id" class="auth-input" placeholder="เช่น 682172007" autocomplete="off">
+    <div id="login-modal" class="modal-overlay">
+        <div class="modal-card">
+            
+            <!-- หน้าเข้าสู่ระบบ -->
+            <div id="auth-login-box">
+                <div class="modal-header">
+                    <div class="modal-icon target">
+                        <i class="ti ti-shield-lock"></i>
+                    </div>
+                    <div>
+                        <div class="modal-title">เข้าสู่ระบบแอดมิน</div>
+                        <div class="modal-sub">กรอกรหัสนักศึกษาเพื่อเข้าสู่ระบบจัดการ</div>
                     </div>
                 </div>
 
-                <!-- กล่องข้อความแจ้งเตือนเมื่อพบข้อผิดพลาด -->
-                <div id="login-error" class="auth-error-box" style="display: none;">
-                    <i class="ti ti-alert-circle"></i>
-                    <span id="login-error-text">ไม่พบรหัสนักศึกษานี้ในระบบ กรุณาลงทะเบียนก่อน</span>
+                <div class="modal-body">
+                    <div class="auth-field">
+                        <label for="login-student-id" class="auth-label">รหัสนักศึกษา</label>
+                        <div class="auth-input-wrap">
+                            <i class="ti ti-id"></i>
+                            <input type="text" id="login-student-id" class="auth-input" placeholder="เช่น 682172007" autocomplete="off">
+                        </div>
+                    </div>
+
+                    <div id="login-error" class="auth-error-box" style="display: none;">
+                        <i class="ti ti-alert-circle"></i>
+                        <span id="login-error-text">ไม่พบรหัสนักศึกษานี้ในระบบ กรุณาลงทะเบียนก่อน</span>
+                    </div>
+                </div>
+
+                <div class="auth-footer">
+                    <button type="button" id="btn-login-submit" class="auth-btn">
+                        <i class="ti ti-login"></i> เข้าสู่ระบบ
+                    </button>
+                    <div class="auth-switch-text">
+                        ยังไม่มีบัญชี? <a href="#" onclick="toggleAuthView('register'); return false;">ลงทะเบียนแอดมิน</a>
+                    </div>
                 </div>
             </div>
 
-            <div class="auth-footer">
-                <button type="button" id="btn-login-submit" class="auth-btn">
-                    <i class="ti ti-login"></i> เข้าสู่ระบบ
-                </button>
-                <div class="auth-switch-text">
-                    ยังไม่มีบัญชี? <a href="#" onclick="toggleAuthView('register'); return false;">ลงทะเบียนแอดมิน</a>
+            <!-- หน้าลงทะเบียน -->
+            <div id="auth-register-box" style="display: none;">
+                <div class="modal-header">
+                    <div class="modal-icon target">
+                        <i class="ti ti-user-plus"></i>
+                    </div>
+                    <div>
+                        <div class="modal-title">ลงทะเบียนแอดมินสาขา</div>
+                        <div class="modal-sub">กรอกข้อมูลเพื่อสร้างบัญชีผู้ดูแล</div>
+                    </div>
+                </div>
+
+                <div class="modal-body">
+                    <div class="auth-field">
+                        <label for="reg-student-id" class="auth-label">รหัสนักศึกษา</label>
+                        <div class="auth-input-wrap">
+                            <i class="ti ti-id"></i>
+                            <input type="text" id="reg-student-id" class="auth-input" placeholder="เช่น 6821207004" autocomplete="off">
+                        </div>
+                    </div>
+
+                    <div class="auth-field">
+                        <label for="reg-name" class="auth-label">ชื่อ-นามสกุล</label>
+                        <div class="auth-input-wrap">
+                            <i class="ti ti-user"></i>
+                            <input type="text" id="reg-name" class="auth-input" placeholder="สมชาย ใจดี" autocomplete="off">
+                        </div>
+                    </div>
+
+                    <div class="auth-field">
+                        <label for="reg-branch" class="auth-label">รหัสสาขา</label>
+                        <div class="auth-input-wrap">
+                            <i class="ti ti-building-community"></i>
+                            <input type="text" id="reg-branch" class="auth-input" placeholder="เช่น comsci41 หรือ BWBS" autocomplete="off">
+                        </div>
+                    </div>
+
+                    <div id="reg-error" class="auth-error-box" style="display: none;">
+                        <i class="ti ti-alert-circle"></i>
+                        <span id="reg-error-text">กรุณากรอกข้อมูลให้ครบถ้วน</span>
+                    </div>
+                </div>
+
+                <div class="auth-footer">
+                    <button type="button" class="auth-btn" onclick="processAdminRegister()">
+                        <i class="ti ti-device-floppy"></i> บันทึกข้อมูล
+                    </button>
+                    <div class="auth-switch-text">
+                        มีบัญชีแล้ว? <a href="#" onclick="toggleAuthView('login'); return false;">กลับหน้าเข้าสู่ระบบ</a>
+                    </div>
                 </div>
             </div>
+
         </div>
-
-        <!-- หน้าลงทะเบียน -->
-        <div id="auth-register-box" style="display: none;">
-            <div class="modal-header">
-                <div class="modal-icon target">
-                    <i class="ti ti-user-plus"></i>
-                </div>
-                <div>
-                    <div class="modal-title">ลงทะเบียนแอดมินสาขา</div>
-                    <div class="modal-sub">กรอกข้อมูลเพื่อสร้างบัญชีผู้ดูแล</div>
-                </div>
-            </div>
-
-            <div class="modal-body">
-                <div class="auth-field">
-                    <label for="reg-student-id" class="auth-label">รหัสนักศึกษา</label>
-                    <div class="auth-input-wrap">
-                        <i class="ti ti-id"></i>
-                        <input type="text" id="reg-student-id" class="auth-input" placeholder="เช่น 6821207004" autocomplete="off">
-                    </div>
-                </div>
-
-                <div class="auth-field">
-                    <label for="reg-name" class="auth-label">ชื่อ-นามสกุล</label>
-                    <div class="auth-input-wrap">
-                        <i class="ti ti-user"></i>
-                        <input type="text" id="reg-name" class="auth-input" placeholder="สมชาย ใจดี" autocomplete="off">
-                    </div>
-                </div>
-
-                <div class="auth-field">
-                    <label for="reg-branch" class="auth-label">รหัสสาขา</label>
-                    <div class="auth-input-wrap">
-                        <i class="ti ti-building-community"></i>
-                        <input type="text" id="reg-branch" class="auth-input" placeholder="เช่น comsci41 หรือ BWBS" autocomplete="off">
-                    </div>
-                </div>
-
-                <div id="reg-error" class="auth-error-box" style="display: none;">
-                    <i class="ti ti-alert-circle"></i>
-                    <span id="reg-error-text">กรุณากรอกข้อมูลให้ครบถ้วน</span>
-                </div>
-            </div>
-
-            <div class="auth-footer">
-                <button type="button" class="auth-btn" onclick="processAdminRegister()">
-                    <i class="ti ti-device-floppy"></i> บันทึกข้อมูล
-                </button>
-                <div class="auth-switch-text">
-                    มีบัญชีแล้ว? <a href="#" onclick="toggleAuthView('login'); return false;">กลับหน้าเข้าสู่ระบบ</a>
-                </div>
-            </div>
-        </div>
-
     </div>
-</div>
 
-<script>
-function toggleAuthView(mode) {
-  document.getElementById('auth-login-box').style.display = mode === 'login' ? 'block' : 'none';
-  document.getElementById('auth-register-box').style.display = mode === 'register' ? 'block' : 'none';
-}
-</script>
+    <script>
+    function toggleAuthView(mode) {
+      document.getElementById('auth-login-box').style.display = mode === 'login' ? 'block' : 'none';
+      document.getElementById('auth-register-box').style.display = mode === 'register' ? 'block' : 'none';
+    }
+    </script>
 
     <!-- Popup ยืนยันการออกจากระบบ -->
     <div id="logout-confirm-modal" class="custom-modal-overlay">
@@ -373,29 +376,24 @@ function toggleAuthView(mode) {
         </div>
     </div>
 
-    <!-- Modal สำหรับ Success Loading Animation -->
-<div id="loading-modal" class="modal-overlay" style="display: none;">
-    <div class="modal-card" style="text-align: center; width: 280px; padding: 32px 20px;">
-        
-        <!-- สถานะกำลังโหลด (Spinner) -->
-        <div id="loading-spinner-box">
-            <div class="loader-spinner"></div>
-            <p id="loading-text" style="margin: 16px 0 0 0; font-size: 14px; color: #1B1F3B; font-weight: 500;">กำลังบันทึกข้อมูล...</p>
-        </div>
-
-        <!-- สถานะโหลดเสร็จ (Checkmark Animation) -->
-        <div id="loading-success-box" style="display: none;">
-            <div class="success-checkmark-wrap">
-                <svg class="checkmark-svg" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 52 52">
-                    <circle class="checkmark-circle" cx="26" cy="26" r="23" fill="none"/>
-                    <path class="checkmark-check" fill="none" d="M14.1 27.2l7.1 7.2 16.7-16.8"/>
-                </svg>
+    <!-- Modal สำหรับ Loading / Success Animation -->
+    <div id="loading-modal" class="modal-overlay" style="display: none;">
+        <div class="modal-card" style="text-align: center; width: 280px; padding: 32px 20px;">
+            <div id="loading-spinner-box">
+                <div class="loader-spinner"></div>
+                <p id="loading-text" style="margin: 16px 0 0 0; font-size: 14px; color: #1B1F3B; font-weight: 500;">กำลังบันทึกข้อมูล...</p>
             </div>
-            <p id="success-text" style="margin: 0; font-size: 15px; color: #1E8E3E; font-weight: 600;">บันทึกสำเร็จ!</p>
+            <div id="loading-success-box" style="display: none;">
+                <div class="success-checkmark-wrap">
+                    <svg class="checkmark-svg" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 52 52">
+                        <circle class="checkmark-circle" cx="26" cy="26" r="23" fill="none"/>
+                        <path class="checkmark-check" fill="none" d="M14.1 27.2l7.1 7.2 16.7-16.8"/>
+                    </svg>
+                </div>
+                <p id="success-text" style="margin: 0; font-size: 15px; color: #1E8E3E; font-weight: 600;">บันทึกสำเร็จ!</p>
+            </div>
         </div>
-
     </div>
-</div>
 
     <script src="data.js"></script>
     <script src="https://cdn.sheetjs.com/xlsx-0.20.3/package/dist/xlsx.full.min.js"></script>

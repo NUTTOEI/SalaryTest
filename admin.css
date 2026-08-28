@@ -372,11 +372,6 @@ body {
   background: #F7F8FC;
 }
 
-.member-row:hover .row-arrow {
-  opacity: 1;
-  transform: translateX(0);
-}
-
 .m-avatar {
   width: 36px;
   height: 36px;
@@ -444,14 +439,6 @@ body {
   outline: none;
 }
 
-.row-arrow {
-  opacity: 0;
-  transform: translateX(-4px);
-  transition: all 0.15s;
-  color: #C7CCEB;
-  font-size: 15px;
-}
-
 .pill {
   font-size: 12px;
   padding: 5px 12px;
@@ -461,10 +448,6 @@ body {
   align-items: center;
   gap: 4px;
   white-space: nowrap;
-}
-
-.pill i {
-  font-size: 13px;
 }
 
 .pill.paid {
@@ -495,10 +478,12 @@ body {
   display: flex;
   gap: 10px;
   margin-bottom: 14px;
+  flex-wrap: wrap;
 }
 
 .add-name-input {
   flex: 1;
+  min-width: 180px;
   padding: 10px 14px;
   border-radius: 10px;
   border: 1px solid #E4E6F0;
@@ -524,11 +509,6 @@ body {
   padding: 6px;
   border-radius: 8px;
   transition: all 0.15s;
-  opacity: 1;
-}
-
-.member-row:hover .delete-btn {
-  opacity: 1;
 }
 
 .delete-btn:hover {
@@ -594,11 +574,6 @@ body {
 .modal-icon.target {
   background: #EEF0FB;
   color: #4C5FD5;
-}
-
-.modal-icon.history {
-  background: #E4F7EE;
-  color: #1F9D6C;
 }
 
 .modal-title {
@@ -702,28 +677,6 @@ body {
   background: #3E4EC0;
 }
 
-.history-list {
-  list-style: none;
-  padding: 0;
-  margin: 0;
-  max-height: 220px;
-  overflow-y: auto;
-}
-
-.history-list li {
-  padding: 10px 12px;
-  border-bottom: 1px solid #F0F1F7;
-  font-size: 13px;
-  color: #1B1F3B;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-}
-
-.history-list li:last-child {
-  border-bottom: none;
-}
-
 @keyframes modalFadeIn {
   from { opacity: 0; }
   to { opacity: 1; }
@@ -732,21 +685,6 @@ body {
 @keyframes modalSlideUp {
   from { transform: translateY(12px) scale(0.98); opacity: 0; }
   to { transform: translateY(0) scale(1); opacity: 1; }
-}
-
-.detail-link-btn {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  color: #4C5FD5;
-  text-decoration: none;
-  padding: 4px;
-  border-radius: 6px;
-  transition: background 0.15s;
-}
-
-.detail-link-btn:hover {
-  background: #EEF0FB;
 }
 
 .mode-select-box {
@@ -806,267 +744,214 @@ body {
   box-shadow: 0 2px 6px rgba(27, 31, 59, 0.08);
 }
 
-.month-select-grid {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 10px;
-  margin-top: 12px;
-}
-
-.month-option-card {
-  background: #fff;
-  border: 1.5px solid #E4E6F0;
-  border-radius: 12px;
-  padding: 12px;
-  text-align: center;
-  cursor: pointer;
-  transition: all 0.2s ease;
-  user-select: none;
-}
-
-.month-option-card:hover {
-  border-color: #C7CCEB;
-  transform: translateY(-1px);
-}
-
-.month-option-card.selected {
-  border-color: #4C5FD5;
-  background: #EEF0FB;
-  color: #4C5FD5;
-  font-weight: 600;
-}
-
-.month-option-card.paid-already {
-  background: #F4FBF7;
-  border-color: #1F9D6C;
-  color: #1F9D6C;
-  cursor: not-allowed;
-  opacity: 0.85;
-}
-
-.month-option-card .m-title {
-  font-family: 'Kanit', sans-serif;
-  font-size: 14px;
-}
-
-.month-option-card .m-status {
-  font-size: 11px;
-  margin-top: 4px;
-  color: #8B90A8;
-}
-
-.month-option-card.paid-already .m-status {
-  color: #1F9D6C;
-  font-weight: 600;
-}
-
 .mode-btn.disabled,
 .mode-btn:disabled {
-    opacity: 0.4;
-    cursor: not-allowed !important;
-    pointer-events: none !important; 
+  opacity: 0.4;
+  cursor: not-allowed !important;
+  pointer-events: none !important; 
 }
 
 .menu-toggle-btn {
-    position: absolute;
-    top: 16px;
-    right: 20px;
-    z-index: 1000;
-    background: #ffffff;
-    border: 1px solid #e2e8f0;
-    border-radius: 8px;
-    padding: 8px;
-    cursor: pointer;
-    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    color: #334155;
+  position: absolute;
+  top: 16px;
+  right: 20px;
+  z-index: 1000;
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 8px;
+  padding: 8px;
+  cursor: pointer;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #334155;
 }
 
 .menu-overlay {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100vw;
-    height: 100vh;
-    background: rgba(0, 0, 0, 0.4);
-    z-index: 9998;
-    display: none;
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: rgba(0, 0, 0, 0.4);
+  z-index: 9998;
+  display: none;
 }
+
 .menu-overlay.active {
-    display: block;
+  display: block;
 }
 
 .side-drawer {
-    position: fixed;
-    top: 0;
-    right: -300px;
-    width: 260px;
-    height: 100vh;
-    background: #ffffff;
-    box-shadow: -4px 0 15px rgba(0,0,0,0.15);
-    z-index: 9999;
-    transition: right 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-    padding: 20px;
-    box-sizing: border-box;
-    display: flex;
-    flex-direction: column;
+  position: fixed;
+  top: 0;
+  right: -300px;
+  width: 260px;
+  height: 100vh;
+  background: #ffffff;
+  box-shadow: -4px 0 15px rgba(0,0,0,0.15);
+  z-index: 9999;
+  transition: right 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  padding: 20px;
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
 }
 
 .side-drawer.open {
-    right: 0;
+  right: 0;
 }
 
 .drawer-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    border-bottom: 1px solid #f1f5f9;
-    padding-bottom: 12px;
-    margin-bottom: 16px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: 1px solid #f1f5f9;
+  padding-bottom: 12px;
+  margin-bottom: 16px;
 }
 
 .drawer-header h3 {
-    margin: 0;
-    font-size: 16px;
-    color: #1e293b;
+  margin: 0;
+  font-size: 16px;
+  color: #1e293b;
 }
 
 .close-btn {
-    background: none;
-    border: none;
-    font-size: 24px;
-    cursor: pointer;
-    color: #64748b;
+  background: none;
+  border: none;
+  font-size: 24px;
+  cursor: pointer;
+  color: #64748b;
 }
 
 .drawer-body {
-    display: flex;
-    flex-direction: column;
-    height: 100%;
-    overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  overflow-y: auto;
 }
 
 .drawer-divider {
-    border: none;
-    border-top: 1px solid #f1f5f9;
-    margin: 16px 0;
+  border: none;
+  border-top: 1px solid #f1f5f9;
+  margin: 16px 0;
 }
 
 .logout-btn {
-    width: 100%;
-    padding: 10px 14px;
-    background: #fef2f2;
-    color: #ef4444;
-    border: 1px solid #fecaca;
-    border-radius: 8px;
-    font-family: inherit;
-    font-size: 14px;
-    font-weight: 500;
-    cursor: pointer;
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    transition: background 0.2s;
-    margin-top: 16px;
+  width: 100%;
+  padding: 10px 14px;
+  background: #fef2f2;
+  color: #ef4444;
+  border: 1px solid #fecaca;
+  border-radius: 8px;
+  font-family: inherit;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  transition: background 0.2s;
+  margin-top: 16px;
 }
 
 .logout-btn:hover {
-    background: #fee2e2;
+  background: #fee2e2;
 }
 
 .custom-modal-overlay {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100vw;
-    height: 100vh;
-    background: rgba(15, 23, 42, 0.5);
-    backdrop-filter: blur(4px);
-    z-index: 100000;
-    display: none;
-    align-items: center;
-    justify-content: center;
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: rgba(15, 23, 42, 0.5);
+  backdrop-filter: blur(4px);
+  z-index: 100000;
+  display: none;
+  align-items: center;
+  justify-content: center;
 }
 
 .custom-modal-overlay.active {
-    display: flex;
+  display: flex;
 }
 
 .custom-modal-card {
-    background: #ffffff;
-    border-radius: 16px;
-    padding: 24px;
-    width: 90%;
-    max-width: 340px;
-    text-align: center;
-    box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
-    animation: modalPop 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+  background: #ffffff;
+  border-radius: 16px;
+  padding: 24px;
+  width: 90%;
+  max-width: 340px;
+  text-align: center;
+  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+  animation: modalPop 0.2s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 @keyframes modalPop {
-    from { opacity: 0; transform: scale(0.95); }
-    to { opacity: 1; transform: scale(1); }
+  from { opacity: 0; transform: scale(0.95); }
+  to { opacity: 1; transform: scale(1); }
 }
 
 .modal-icon.warning-icon {
-    width: 52px;
-    height: 52px;
-    background: #fef2f2;
-    color: #ef4444;
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    margin: 0 auto 16px;
+  width: 52px;
+  height: 52px;
+  background: #fef2f2;
+  color: #ef4444;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto 16px;
 }
 
 .custom-modal-card h3 {
-    margin: 0 0 8px;
-    font-size: 18px;
-    color: #0f172a;
-    font-weight: 600;
+  margin: 0 0 8px;
+  font-size: 18px;
+  color: #0f172a;
+  font-weight: 600;
 }
 
 .custom-modal-card p {
-    margin: 0 0 24px;
-    font-size: 14px;
-    color: #64748b;
+  margin: 0 0 24px;
+  font-size: 14px;
+  color: #64748b;
 }
 
 .modal-actions {
-    display: flex;
-    gap: 10px;
+  display: flex;
+  gap: 10px;
 }
 
 .btn-secondary {
-    flex: 1;
-    padding: 10px 16px;
-    background: #f1f5f9;
-    color: #475569;
-    border: none;
-    border-radius: 8px;
-    font-family: inherit;
-    font-size: 14px;
-    font-weight: 500;
-    cursor: pointer;
-    transition: background 0.2s;
+  flex: 1;
+  padding: 10px 16px;
+  background: #f1f5f9;
+  color: #475569;
+  border: none;
+  border-radius: 8px;
+  font-family: inherit;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background 0.2s;
 }
 .btn-secondary:hover { background: #e2e8f0; }
 
 .btn-danger {
-    flex: 1;
-    padding: 10px 16px;
-    background: #ef4444;
-    color: #ffffff;
-    border: none;
-    border-radius: 8px;
-    font-family: inherit;
-    font-size: 14px;
-    font-weight: 500;
-    cursor: pointer;
-    transition: background 0.2s;
+  flex: 1;
+  padding: 10px 16px;
+  background: #ef4444;
+  color: #ffffff;
+  border: none;
+  border-radius: 8px;
+  font-family: inherit;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background 0.2s;
 }
 .btn-danger:hover { background: #dc2626; }
 
@@ -1165,9 +1050,7 @@ body {
   background: rgba(0, 0, 0, 0.8);
 }
 
-/* ==========================================
-   ปรับแต่งสไตล์ Admin Auth Modal (เข้าสู่ระบบ / ลงทะเบียน)
-   ========================================== */
+/* Auth Modal Styles */
 #login-modal {
   position: fixed;
   top: 0;
@@ -1300,122 +1183,61 @@ body {
   color: #3E4EC0;
 }
 
-/* แอนิเมชัน SVG วงกลมติ๊กถูก */
-.success-checkmark-wrap {
-    width: 80px;
-    height: 80px;
-    margin: 0 auto 16px;
-}
-
-.checkmark-svg {
-    width: 80px;
-    height: 80px;
-    border-radius: 50%;
-    display: block;
-    stroke-width: 3;
-    stroke: #1E8E3E; /* สีเขียวเครื่องหมาย */
-    stroke-miterlimit: 10;
-    animation: checkmark-scale 0.3s ease-in-out 0.9s both;
-}
-
-/* วาดเส้นวงกลมรอบนอก */
-.checkmark-circle {
-    stroke-dasharray: 166;
-    stroke-dashoffset: 166;
-    stroke-width: 3;
-    stroke-miterlimit: 10;
-    stroke: #1E8E3E;
-    fill: none;
-    animation: checkmark-stroke 0.6s cubic-bezier(0.65, 0, 0.45, 1) forwards;
-}
-
-/* วาดเส้นเครื่องหมายติ๊กถูก */
-.checkmark-check {
-    transform-origin: 50% 50%;
-    stroke-dasharray: 48;
-    stroke-dashoffset: 48;
-    animation: checkmark-stroke 0.3s cubic-bezier(0.65, 0, 0.45, 1) 0.6s forwards;
-}
-
-/* Keyframes สำหรับวาดเส้น stroke */
-@keyframes checkmark-stroke {
-    100% {
-        stroke-dashoffset: 0;
-    }
-}
-
-/* Keyframes สำหรับเด้งเบาๆ ตอนวาดเสร็จ */
-@keyframes checkmark-scale {
-    0%, 100% {
-        transform: none;
-    }
-    50% {
-        transform: scale3d(1.1, 1.1, 1);
-    }
-}
-
-/* ==========================================
-   Loading Spinner & Success Checkmark Animation
-   ========================================== */
-
-/* วงกลมหมุนตอนกำลังโหลด */
+/* Loading Spinner & Success Checkmark Animation */
 .loader-spinner {
-    width: 52px;
-    height: 52px;
-    border: 4px solid #EEF0FB;
-    border-top: 4px solid #4C5FD5;
-    border-radius: 50%;
-    margin: 0 auto;
-    animation: spinner-rotate 0.8s linear infinite;
+  width: 52px;
+  height: 52px;
+  border: 4px solid #EEF0FB;
+  border-top: 4px solid #4C5FD5;
+  border-radius: 50%;
+  margin: 0 auto;
+  animation: spinner-rotate 0.8s linear infinite;
 }
 
 @keyframes spinner-rotate {
-    0% { transform: rotate(0deg); }
-    100% { transform: rotate(360deg); }
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
 }
 
-/* ครอบ SVG ติ๊กถูก */
 .success-checkmark-wrap {
-    width: 70px;
-    height: 70px;
-    margin: 0 auto 12px;
+  width: 70px;
+  height: 70px;
+  margin: 0 auto 12px;
 }
 
 .checkmark-svg {
-    width: 70px;
-    height: 70px;
-    border-radius: 50%;
-    display: block;
-    stroke-width: 3.5;
-    stroke: #1E8E3E;
-    stroke-miterlimit: 10;
-    animation: checkmark-scale 0.3s ease-in-out 0.8s both;
+  width: 70px;
+  height: 70px;
+  border-radius: 50%;
+  display: block;
+  stroke-width: 3.5;
+  stroke: #1E8E3E;
+  stroke-miterlimit: 10;
+  animation: checkmark-scale 0.3s ease-in-out 0.8s both;
 }
 
-/* วาดเส้นวงกลม */
 .checkmark-circle {
-    stroke-dasharray: 166;
-    stroke-dashoffset: 166;
-    stroke-width: 3.5;
-    stroke-miterlimit: 10;
-    stroke: #1E8E3E;
-    fill: none;
-    animation: checkmark-stroke 0.5s cubic-bezier(0.65, 0, 0.45, 1) forwards;
+  stroke-dasharray: 166;
+  stroke-dashoffset: 166;
+  stroke-width: 3.5;
+  stroke-miterlimit: 10;
+  stroke: #1E8E3E;
+  fill: none;
+  animation: checkmark-stroke 0.5s cubic-bezier(0.65, 0, 0.45, 1) forwards;
 }
 
-/* วาดเส้นเครื่องหมายถูก */
 .checkmark-check {
-    transform-origin: 50% 50%;
-    stroke-dasharray: 48;
-    stroke-dashoffset: 48;
-    animation: checkmark-stroke 0.3s cubic-bezier(0.65, 0, 0.45, 1) 0.5s forwards;
+  transform-origin: 50% 50%;
+  stroke-dasharray: 48;
+  stroke-dashoffset: 48;
+  animation: checkmark-stroke 0.3s cubic-bezier(0.65, 0, 0.45, 1) 0.5s forwards;
 }
 
 @keyframes checkmark-stroke {
-    100% { stroke-dashoffset: 0; }
+  100% { stroke-dashoffset: 0; }
 }
 
 @keyframes checkmark-scale {
-    0%, 100% { transform: none; }
-    50% { transform: scale3d(1.15, 1.15, 1); }
+  0%, 100% { transform: none; }
+  50% { transform: scale3d(1.15, 1.15, 1); }
 }
