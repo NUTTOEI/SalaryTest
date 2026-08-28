@@ -682,7 +682,8 @@ async function processAdminLogin() {
 }
 
 // ลงทะเบียนแอดมินใหม่เข้า MySQL
-async function processAdminRegister() {
+async function processAdminRegister(e) {
+    if (e) e.preventDefault();
     const studentId = document.getElementById("reg-student-id")?.value.trim();
     const name = document.getElementById("reg-name")?.value.trim();
     const branch = document.getElementById("reg-branch")?.value.trim();
@@ -709,7 +710,7 @@ async function processAdminRegister() {
             sessionStorage.setItem("admin_branch", branch);
 
             // 2. แสดงติ๊กถูกสีเขียวสำเร็จ พร้อม Callback ปิด Modal หลังจบอนิเมชัน
-            showSuccess("ลงทะเบียนสำเร็จ!", 1400, () => {
+            showSuccess("ลงทะเบียนสำเร็จ!", 1800, () => {
                 const loginModal = document.getElementById("login-modal");
                 const mainDashboard = document.getElementById("main-dashboard");
                 if (loginModal) loginModal.style.display = "none";

@@ -338,7 +338,7 @@
                 </div>
 
                 <div class="auth-footer">
-                    <button type="button" class="auth-btn" onclick="processAdminRegister()">
+                    <button type="button" class="auth-btn" onclick="processAdminRegister(event)">
                         <i class="ti ti-device-floppy"></i> บันทึกข้อมูล
                     </button>
                     <div class="auth-switch-text">
@@ -385,9 +385,9 @@
             </div>
             <div id="loading-success-box" style="display: none;">
                 <div class="success-checkmark-wrap">
-                    <svg class="checkmark-svg" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 52 52">
-                        <circle class="checkmark-circle" cx="26" cy="26" r="23" fill="none"/>
-                        <path class="checkmark-check" fill="none" d="M14.1 27.2l7.1 7.2 16.7-16.8"/>
+                    <svg class="checkmark-svg" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 52 52" width="70" height="70">
+                        <circle class="checkmark-circle" cx="26" cy="26" r="23" fill="none" stroke="#1E8E3E" stroke-width="3.5"/>
+                        <path class="checkmark-check" fill="none" stroke="#1E8E3E" stroke-width="4" stroke-linecap="round" stroke-linejoin="round" d="M14.1 27.2l7.1 7.2 16.7-16.8"/>
                     </svg>
                 </div>
                 <p id="success-text" style="margin: 0; font-size: 15px; color: #1E8E3E; font-weight: 600;">บันทึกสำเร็จ!</p>

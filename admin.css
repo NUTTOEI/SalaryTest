@@ -1203,6 +1203,9 @@ body {
   width: 70px;
   height: 70px;
   margin: 0 auto 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .checkmark-svg {
@@ -1213,7 +1216,7 @@ body {
   stroke-width: 3.5;
   stroke: #1E8E3E;
   stroke-miterlimit: 10;
-  animation: checkmark-scale 0.3s ease-in-out 0.8s both;
+  animation: checkmark-scale 0.3s ease-in-out forwards;
 }
 
 .checkmark-circle {
@@ -1223,14 +1226,16 @@ body {
   stroke-miterlimit: 10;
   stroke: #1E8E3E;
   fill: none;
-  animation: checkmark-stroke 0.5s cubic-bezier(0.65, 0, 0.45, 1) forwards;
+  animation: checkmark-stroke 0.4s cubic-bezier(0.65, 0, 0.45, 1) forwards;
 }
 
 .checkmark-check {
   transform-origin: 50% 50%;
   stroke-dasharray: 48;
   stroke-dashoffset: 48;
-  animation: checkmark-stroke 0.3s cubic-bezier(0.65, 0, 0.45, 1) 0.5s forwards;
+  stroke: #1E8E3E;
+  stroke-width: 4;
+  animation: checkmark-stroke 0.3s cubic-bezier(0.65, 0, 0.45, 1) 0.2s forwards;
 }
 
 @keyframes checkmark-stroke {
@@ -1238,6 +1243,7 @@ body {
 }
 
 @keyframes checkmark-scale {
-  0%, 100% { transform: none; }
-  50% { transform: scale3d(1.15, 1.15, 1); }
+  0% { transform: scale(0.8); }
+  50% { transform: scale(1.1); }
+  100% { transform: scale(1); }
 }
