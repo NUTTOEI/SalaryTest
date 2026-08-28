@@ -491,31 +491,6 @@ body {
   color: #C7CCEB;
 }
 
-@media (max-width: 560px) {
-  .stats-grid {
-    flex: 1 1 45%;
-  }
-
-  .hero {
-    padding: 20px;
-    gap: 18px;
-  }
-
-  .ring-wrap {
-    width: 96px;
-    height: 96px;
-  }
-
-  .ring-pct {
-    font-size: 19px;
-  }
-
-  .rate-edit {
-    width: 100%;
-    justify-content: flex-start;
-  }
-}
-
 .add-member-row {
   display: flex;
   gap: 10px;
@@ -838,12 +813,6 @@ body {
   margin-top: 12px;
 }
 
-@media (max-width: 520px) {
-  .month-select-grid {
-    grid-template-columns: repeat(2, 1fr);
-  }
-}
-
 .month-option-card {
   background: #fff;
   border: 1.5px solid #E4E6F0;
@@ -898,121 +867,6 @@ body {
     pointer-events: none !important; 
 }
 
-/* Mobile Responsive */
-@media (max-width: 768px) {
-  .add-member-row {
-    flex-direction: column !important;
-    gap: 8px !important;
-  }
-
-  .add-member-row input,
-  .add-member-row button {
-    width: 100% !important;
-    justify-content: center !important;
-  }
-
-  .controls {
-    flex-direction: column !important;
-    gap: 8px !important;
-  }
-
-  .search-wrap {
-    width: 100% !important;
-  }
-
-  .filter-group,
-  .sort-group {
-    width: 100% !important;
-    justify-content: space-between !important;
-  }
-
-  .filter-btn,
-  .sort-btn {
-    flex: 1;
-    justify-content: center !important;
-  }
-
-  .member-row {
-    display: flex !important;
-    flex-direction: column !important;
-    align-items: flex-start !important;
-    gap: 10px !important;
-    padding: 14px !important;
-  }
-
-  .m-text {
-    text-align: left !important;
-  }
-
-  .m-sub {
-    justify-content: flex-start !important;
-  }
-
-  .m-right {
-    justify-content: space-between !important;
-    width: 100% !important;
-    border-top: 1px dashed #F0F1F7 !important;
-    padding-top: 8px !important;
-  }
-}
-
-#login-modal {
-   background: rgba(27, 31, 59, 0.5) !important;
-    backdrop-filter: blur(4px);
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100vw;
-    height: 100vh;
-    z-index: 99999;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-}
-
-#auth-login-box, 
-#auth-register-box {
-    display: flex;
-    flex-direction: column;
-    gap: 12px;
-    width: 100%;
-}
-
-.auth-input {
-    width: 100%;
-    padding: 10px 14px;
-    border: 1px solid #E4E6F0;
-    border-radius: 8px;
-    font-size: 14px;
-    font-family: 'Noto Sans Thai', sans-serif;
-    outline: none;
-    box-sizing: border-box;
-    transition: all 0.2s ease;
-}
-
-.auth-input:focus {
-    border-color: #4C5FD5;
-    box-shadow: 0 0 0 3px rgba(76, 95, 213, 0.15);
-}
-
-.auth-btn {
-    width: 100%;
-    padding: 10px;
-    background-color: #4C5FD5;
-    color: #ffffff;
-    border: none;
-    border-radius: 8px;
-    font-size: 14px;
-    font-weight: 500;
-    font-family: 'Noto Sans Thai', sans-serif;
-    cursor: pointer;
-    transition: background-color 0.2s ease;
-}
-
-.auth-btn:hover {
-    background-color: #3E4EC0;
-}
-
 .menu-toggle-btn {
     position: absolute;
     top: 16px;
@@ -1044,7 +898,6 @@ body {
     display: block;
 }
 
-/* Side Drawer */
 .side-drawer {
     position: fixed;
     top: 0;
@@ -1101,85 +954,6 @@ body {
     margin: 16px 0;
 }
 
-/* Branch Profile Card */
-.branch-profile-card {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    background: #f8fafc;
-    padding: 16px;
-    border-radius: 12px;
-    border: 1px solid #e2e8f0;
-    width: 100%;
-    box-shadow: none;
-    box-sizing: border-box;
-}
-
-.branch-profile-card .profile-title {
-    font-size: 14px;
-    font-weight: 600;
-    color: #1e293b;
-}
-
-.avatar-wrapper {
-    position: relative;
-    width: 84px;
-    height: 84px;
-    border-radius: 50%;
-    overflow: hidden;
-    border: 3px solid #4C5FD5;
-    margin: 12px 0 6px 0;
-}
-
-.avatar-wrapper img {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-}
-
-.upload-btn-overlay {
-    position: absolute;
-    bottom: 0;
-    left: 0;
-    right: 0;
-    background: rgba(0, 0, 0, 0.65);
-    color: #ffffff;
-    text-align: center;
-    padding: 4px 0;
-    font-size: 10px;
-    cursor: pointer;
-    opacity: 0;
-    transition: opacity 0.2s ease-in-out;
-}
-
-.avatar-wrapper:hover .upload-btn-overlay {
-    opacity: 1;
-}
-
-.hint-text {
-    font-size: 10px;
-    color: #64748b;
-    margin-bottom: 10px;
-    text-align: center;
-}
-
-.btn-save {
-    width: 100%;
-    background-color: #28a745;
-    color: #fff;
-    border: none;
-    padding: 8px 12px;
-    border-radius: 6px;
-    font-size: 13px;
-    font-weight: 600;
-    cursor: pointer;
-    transition: background-color 0.2s;
-}
-
-.btn-save:hover {
-    background-color: #218838;
-}
-
 .logout-btn {
     width: 100%;
     padding: 10px 14px;
@@ -1202,7 +976,6 @@ body {
     background: #fee2e2;
 }
 
-/* Custom Modal */
 .custom-modal-overlay {
     position: fixed;
     top: 0;
@@ -1297,7 +1070,6 @@ body {
 }
 .btn-danger:hover { background: #dc2626; }
 
-/* Drawer Profile Display (แสดงรูปเดี่ยว) */
 .drawer-profile-display {
   display: flex;
   justify-content: center;
@@ -1320,7 +1092,6 @@ body {
   object-fit: cover;
 }
 
-/* Drawer Menu List & Items */
 .drawer-menu-list {
   display: flex;
   flex-direction: column;
@@ -1354,7 +1125,6 @@ body {
   font-size: 18px;
 }
 
-/* Settings Modal Avatar Upload */
 .avatar-upload-label {
   display: inline-block;
   cursor: pointer;
@@ -1386,9 +1156,160 @@ body {
   text-align: center;
   padding: 4px 0;
   font-size: 11px;
+  opacity: 0;
   transition: opacity 0.2s;
 }
 
 .avatar-wrapper:hover .upload-btn-overlay {
+  opacity: 1;
   background: rgba(0, 0, 0, 0.8);
+}
+
+/* ==========================================
+   สไตล์ Admin Auth (Modal เข้าสู่ระบบ/ลงทะเบียน)
+   ========================================== */
+#login-modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background: rgba(27, 31, 59, 0.5) !important;
+    backdrop-filter: blur(4px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 99999;
+}
+
+#auth-login-box, 
+#auth-register-box {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    width: 100%;
+}
+
+.auth-input {
+    width: 100%;
+    padding: 10px 14px;
+    border: 1px solid #E4E6F0;
+    border-radius: 8px;
+    font-size: 14px;
+    font-family: 'Noto Sans Thai', sans-serif;
+    outline: none;
+    box-sizing: border-box;
+    transition: all 0.2s ease;
+}
+
+.auth-input:focus {
+    border-color: #4C5FD5;
+    box-shadow: 0 0 0 3px rgba(76, 95, 213, 0.15);
+}
+
+.auth-btn {
+    width: 100%;
+    padding: 10px;
+    background-color: #4C5FD5;
+    color: #ffffff;
+    border: none;
+    border-radius: 8px;
+    font-size: 14px;
+    font-weight: 500;
+    font-family: 'Noto Sans Thai', sans-serif;
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+}
+
+.auth-btn:hover {
+    background-color: #3E4EC0;
+}
+
+/* Media Queries สำหรับหน้าจอมือถือ */
+@media (max-width: 768px) {
+  .add-member-row {
+    flex-direction: column !important;
+    gap: 8px !important;
+  }
+
+  .add-member-row input,
+  .add-member-row button {
+    width: 100% !important;
+    justify-content: center !important;
+  }
+
+  .controls {
+    flex-direction: column !important;
+    gap: 8px !important;
+  }
+
+  .search-wrap {
+    width: 100% !important;
+  }
+
+  .filter-group,
+  .sort-group {
+    width: 100% !important;
+    justify-content: space-between !important;
+  }
+
+  .filter-btn,
+  .sort-btn {
+    flex: 1;
+    justify-content: center !important;
+  }
+
+  .member-row {
+    display: flex !important;
+    flex-direction: column !important;
+    align-items: flex-start !important;
+    gap: 10px !important;
+    padding: 14px !important;
+  }
+
+  .m-text {
+    text-align: left !important;
+  }
+
+  .m-sub {
+    justify-content: flex-start !important;
+  }
+
+  .m-right {
+    justify-content: space-between !important;
+    width: 100% !important;
+    border-top: 1px dashed #F0F1F7 !important;
+    padding-top: 8px !important;
+  }
+}
+
+@media (max-width: 560px) {
+  .stats-grid {
+    flex: 1 1 45%;
+  }
+
+  .hero {
+    padding: 20px;
+    gap: 18px;
+  }
+
+  .ring-wrap {
+    width: 96px;
+    height: 96px;
+  }
+
+  .ring-pct {
+    font-size: 19px;
+  }
+
+  .rate-edit {
+    width: 100%;
+    justify-content: flex-start;
+  }
+}
+
+@media (max-width: 520px) {
+  .month-select-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
 }
