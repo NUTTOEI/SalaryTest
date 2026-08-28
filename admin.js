@@ -613,25 +613,10 @@ function setupBranchTitle() {
     });
 }
 
-const ADMIN_BRANCH_MAPPING = {
-    "6821207004": "comsci41",
-    "6821720007": "BWBS"
-};
 
-function getBranchFromStudentId(studentId) {
-    if (ADMIN_BRANCH_MAPPING[studentId]) {
-        return ADMIN_BRANCH_MAPPING[studentId];
-    }
-
-    if (studentId.startsWith("212")) return "comsci41";
-    if (studentId.startsWith("217")) return "BWBS";
-
-    return null;
-}
-
-function processAdminLogin() {
+// เข้าสู่ระบบแอดมินผ่าน MySQL
+async function processAdminLogin() {
     const inputEl = document.getElementById("login-student-id");
-    const errorEl = document.getElementById("login-error");
     const studentId = inputEl ? inputEl.value.trim() : "";
 
     if (!studentId) {
@@ -639,19 +624,65 @@ function processAdminLogin() {
         return;
     }
 
-    const branch = getBranchFromStudentId(studentId);
-    if (!branch) {
-        showLoginError("ไม่พบรหัสนักศึกษานี้");
+    try {
+        const response = await fetch("/api/admin/login", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ studentId })
+        });
+
+        const data = await response.json();
+
+        if (!data.success) {
+            showLoginError(data.message);
+            return;
+        }
+
+        sessionStorage.setItem("admin_student_id", data.studentId);
+        sessionStorage.setItem("admin_branch", data.branch);
+        sessionStorage.setItem("admin_name", data.name);
+
+        const loginModal = document.getElementById("login-modal");
+        if (loginModal) loginModal.style.display = "none";
+        
+        applyAdminBranch(data.branch);
+    } catch (err) {
+        showLoginError("เกิดข้อผิดพลาดในการเชื่อมต่อเซิร์ฟเวอร์");
+    }
+}
+
+// ลงทะเบียนแอดมินใหม่เข้า MySQL
+async function processAdminRegister() {
+    const studentId = document.getElementById("reg-student-id")?.value.trim();
+    const name = document.getElementById("reg-name")?.value.trim();
+    const branch = document.getElementById("reg-branch")?.value.trim();
+
+    if (!studentId || !name || !branch) {
+        alert("กรุณากรอกข้อมูลให้ครบทุกช่อง");
         return;
     }
 
-    sessionStorage.setItem("admin_student_id", studentId);
-    sessionStorage.setItem("admin_branch", branch);
+    try {
+        const response = await fetch("/api/admin/register", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ studentId, name, branch })
+        });
 
-    const loginModal = document.getElementById("login-modal");
-    if (loginModal) loginModal.style.display = "none";
-    
-    applyAdminBranch(branch);
+        const data = await response.json();
+
+        if (data.success) {
+            alert("ลงทะเบียนสำเร็จ! สามารถเข้าสู่ระบบได้ทันที");
+            if (document.getElementById("login-student-id")) {
+                document.getElementById("login-student-id").value = studentId;
+            }
+            toggleAuthView('login'); // สลับกลับหน้า Login
+        } else {
+            alert("ลงทะเบียนไม่สำเร็จ: " + data.message);
+        }
+    } catch (err) {
+        alert("เกิดข้อผิดพลาดในการเชื่อมต่อเซิร์ฟเวอร์");
+    }
 }
 
 function showLoginError(msg) {

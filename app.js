@@ -441,7 +441,7 @@ app.post('/api/admin/branch/upload-profile', uploadBranchAvatar.single('avatar')
         if (!branch) {
             return res.status(400).json({ success: false, message: 'กรุณาระบุสาขา' });
         }
-        
+
         if (!req.file) {
             return res.status(400).json({ success: false, message: 'กรุณาเลือกไฟล์รูปภาพ' });
         }
@@ -487,4 +487,59 @@ const PORT = process.env.PORT || 3000;
 app.listen(PORT, async () => {
     console.log(`🚀 Server running on port ${PORT}`);
     await testConnection();
+});
+
+
+/* ------------------------------------------------------------------ */
+/* API: สมัครสมาชิก และ เข้าสู่ระบบแอดมิน                                 */
+/* ------------------------------------------------------------------ */
+
+// 1. API ลงทะเบียนแอดมินใหม่ (เก็บเข้า MySQL)
+app.post('/api/admin/register', async (req, res) => {
+    try {
+        const { studentId, name, branch } = req.body;
+        if (!studentId || !name || !branch) {
+            return res.status(400).json({ success: false, message: 'กรุณากรอกข้อมูลให้ครบถ้วน' });
+        }
+
+        await pool.query(
+            "INSERT INTO admins (student_id, name, branch) VALUES (?, ?, ?)",
+            [studentId.trim(), name.trim(), branch.trim()]
+        );
+
+        res.json({ success: true, message: 'ลงทะเบียนแอดมินสำเร็จ' });
+    } catch (err) {
+        if (err.code === 'ER_DUP_ENTRY') {
+            return res.status(400).json({ success: false, message: 'รหัสนักศึกษานี้เคยลงทะเบียนไว้แล้ว' });
+        }
+        console.error('Register Admin Error:', err);
+        res.status(500).json({ success: false, message: err.message });
+    }
+});
+
+// 2. API ตรวจสอบรหัสนักศึกษาเพื่อเข้าสู่ระบบ
+app.post('/api/admin/login', async (req, res) => {
+    try {
+        const { studentId } = req.body;
+        if (!studentId) {
+            return res.status(400).json({ success: false, message: 'กรุณากรอกรหัสนักศึกษา' });
+        }
+
+        const [rows] = await pool.query("SELECT * FROM admins WHERE student_id = ?", [studentId.trim()]);
+        
+        if (rows.length === 0) {
+            return res.status(404).json({ success: false, message: 'ไม่พบรหัสนักศึกษานี้ในระบบ กรุณาลงทะเบียนก่อน' });
+        }
+
+        const admin = rows[0];
+        res.json({ 
+            success: true, 
+            studentId: admin.student_id, 
+            name: admin.name, 
+            branch: admin.branch 
+        });
+    } catch (err) {
+        console.error('Login Admin Error:', err);
+        res.status(500).json({ success: false, message: err.message });
+    }
 });
