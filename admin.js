@@ -758,3 +758,62 @@ document.addEventListener("DOMContentLoaded", () => {
     overlay?.addEventListener("click", closeDrawer);
 });
 
+document.addEventListener('DOMContentLoaded', () => {
+    const branchImgInput = document.getElementById('branchImgInput');
+    const branchProfileImg = document.getElementById('branchProfileImg');
+    const btnSaveBranchImg = document.getElementById('btnSaveBranchImg');
+
+    let selectedFile = null;
+
+    branchImgInput.addEventListener('change', (e) => {
+        const file = e.target.files[0];
+        if (file) {
+            if (file,size > 2 * 1024 * 1024) {
+                alert('ขนาดไฟล์ต้องไม่เกิน 2MB');
+                branchImgInput.value = '';
+                return;
+            }
+
+            selectedFile = file;
+            branchProfileImg.src = URL.createObjectURL(file);
+            btnSaveBranchImg.style.display = 'inline-block';
+        }
+    });
+
+    btnSaveBranchImg.addEventListener('click', async () => {
+        if (!selectedFile) return;
+        const currentBranchId = '1';
+
+        const formData = new FormData();
+        formData.append('branchImage', selectedFile);
+        formData.append('branchId', currentBranchId);
+
+        btnSaveBranchImg.disabled = true;
+        btnSaveBranchImg.innerText = 'กำลังอัปโหลด...';
+
+        try {
+            const response = await fetch('/api/admin/branch/upload-profile', {
+                method: 'POST',
+                body: formData
+            });
+
+            const result = await response.json();
+
+            if (result.success) {
+                alert('อัปเดตรูปโปรไฟล์เรียบร้อย!');
+                branchProfileImg.src = result.imagePath;
+                btnSaveBranchImg.style.display = 'none';
+                selectedFile = null;
+            } else {
+                alert('เกิดข้อผิดพลาด: ' + result.message);
+            }
+        } catch (error) {
+            console.error('Upload Error:' error);
+            alert('ไม่สามารถเชื่อต่อกับเซิร์ฟเวอร์ได้');
+        } finally {
+            btnSaveBranchImg.disabled = false;
+            btnSaveBranchImg.innerText = 'บันทึกรูปภาพ';
+        }
+    });
+});
+

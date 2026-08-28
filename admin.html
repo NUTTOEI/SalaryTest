@@ -241,6 +241,21 @@
     </div>
 </div>
 
+<div class="branch-profile-card">
+    <h3>รูปโปรไฟล์สาขา</h3>
+
+    <div class="avatar-wrapper">
+        <img id="branchProfileImg" src="/uploads/branch/default.png" alt="รูปโปรไฟล์สาขา">
+        <label for="branchImgInput" class="upload-btn-overlay">
+            <span>📷 เปลี่ยนรูป</span>
+        </label>
+        <input type="file" id="branchImgInput" accept="image/*" hidden>
+    </div>
+    <p class="hint-text">รองรับ JPG, PNG (ขนาดไม่เกิน 2MB)</p>
+    <button id="btnSaveBranchImg" class="btn-save" style="display: none;">บันทึกรูปภาพ</button>
+</div>
+
+
         <script src="data.js"></script>
         <script src="https://cdn.sheetjs.com/xlsx-0.20.3/package/dist/xlsx.full.min.js"></script>
         <script src="admin.js"></script>

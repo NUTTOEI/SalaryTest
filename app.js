@@ -10,6 +10,7 @@ const jsQR = require('jsqr');
 const axios = require('axios');
 const path = require('path');
 const FormData = require('form-data');
+const db = require('./db');
 
 const { pool, testConnection } = require('./db');
 
@@ -416,4 +417,52 @@ const PORT = process.env.PORT || 3000;
 app.listen(PORT, async () => {
     console.log(`🚀 Server running on port ${PORT}`);
     await testConnection();
+});
+
+app.use('/uploads', express.status(path.join(__dirname, 'uploads')));
+
+const storage = multer.diskStorage({
+    destination: (req, file, cb) => {
+        cb(null, 'uploads/branches/');
+    },
+    filename: (req, file, cb) => {
+        const uniqueSuffix = DataTransfer.now() + '-' + Math.round(Math,random() * 1E9);
+        const ext = path.extname(file.originalname);
+        cb(null, `branch-${req.body.branchId || 'profile'}-${uniqueSuffix}${ext}`);
+    }
+});
+
+const upload = multer({
+    storage: storage,
+    limits: { fileSize: 2 * 1024 * 1024 },
+    fileFilter: (req, file, cb) => {
+        if (file.mimetype.startsWith('image/')) {
+            cb(null, true);
+        } else {
+            cb(new Error('กรุณาอัพโหลดไฟล์รูปภาพเท่านั้น'));
+        }
+    }
+});
+
+app.post('/api/admin/branch/upload-profile', upload.single('branchImg'), async (req, res) => {
+    try {
+        const { branchId } = req.body;
+        if (!req.file) {
+            return res.status(400).json({ success: false, message: 'กรุณาเลือกไฟล์รูปภาพ' });
+        }
+
+        const imagePath = `/uploads/branches/${req.file.filename}`;
+
+        const query = 'UPDATE branches SET profile_img = ? WHERE id = ?';
+        await db.query(query, [imagePath, branchId]);
+
+        res.json({
+            success: true;
+            message: 'อัปเดทรูปโปรไฟล์สำเร็จ',
+            imagePath: imagePath
+        });
+    } catch (error) {
+        console.error('Upload Error:', error);
+        res.status(500).json({ success: file, message: 'เกิดข้อผิดพลาด' });
+    }
 });
