@@ -397,10 +397,12 @@ const branchStorage = multer.diskStorage({
         cb(null, uploadsDir);
     },
     filename: (req, file, cb) => {
-        const branch = req.body.branch || 'default';
-        cb(null, `avatar-${branch}-${Date.now()}${path.extname(file.originalname)}`);
+        const ext = path.extname(file.originalname);
+        const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9);
+        cb(null, `avatar-${uniqueSuffix}${ext}`);
     }
 });
+
 
 const uploadBranchAvatar = multer({
     storage: branchStorage,
@@ -435,6 +437,11 @@ app.get('/api/branch/profile', async (req, res) => {
 app.post('/api/admin/branch/upload-profile', uploadBranchAvatar.single('avatar'), async (req, res) => {
     try {
         const branch = req.body.branch;
+
+        if (!branch) {
+            return res.status(400).json({ success: false, message: 'กรุณาระบุสาขา' });
+        }
+        
         if (!req.file) {
             return res.status(400).json({ success: false, message: 'กรุณาเลือกไฟล์รูปภาพ' });
         }

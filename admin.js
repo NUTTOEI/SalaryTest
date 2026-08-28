@@ -849,8 +849,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
         const currentBranch = sessionStorage.getItem("admin_branch") || "comsci41";
         const formData = new FormData();
-        formData.append('avatar', selectedFile);
         formData.append('branch', currentBranch);
+        formData.append('avatar', selectedFile);
 
         saveAvatarBtn.disabled = true;
         saveAvatarBtn.innerText = 'กำลังบันทึก...';
