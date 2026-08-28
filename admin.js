@@ -1,3 +1,5 @@
+const { response } = require("express");
+
 if (typeof MEMBERS === "undefined") MEMBERS = [];
 if (typeof TARGET_AMOUNT === "undefined") TARGET_AMOUNT = 0;
 
@@ -688,9 +690,12 @@ async function processAdminRegister() {
     const branch = document.getElementById("reg-branch")?.value.trim();
 
     if (!studentId || !name || !branch) {
-        alert("กรุณากรอกข้อมูลให้ครบทุกช่อง");
+        alert("กรุณากรอกข้อมูลให้ครบถ้วน");
         return;
     }
+
+    // 1. เรียกแสดงวงกลมหมุนรอโหลด
+    showLoading("กำลังลงทะเบียน...");
 
     try {
         const response = await fetch("/api/admin/register", {
@@ -702,26 +707,29 @@ async function processAdminRegister() {
         const data = await response.json();
 
         if (data.success) {
-            alert("ลงทะเบียนสำเร็จ!");
-
             sessionStorage.setItem("admin_student_id", studentId);
             sessionStorage.setItem("admin_branch", branch);
 
-            const loginModal = document.getElementById("login-modal");
-            const mainDashboard = document.getElementById("main-dashboard");
-            if (loginModal) loginModal.style.display = "none";
-            if (mainDashboard) mainDashboard.style.display = "block";
+            // 2. แสดงติ๊กถูกสีเขียวสำเร็จ พร้อม Callback ปิด Modal หลังจบอนิเมชัน
+            showSuccess("ลงทะเบียนสำเร็จ!", 1400, () => {
+                const loginModal = document.getElementById("login-modal");
+                const mainDashboard = document.getElementById("main-dashboard");
+                if (loginModal) loginModal.style.display = "none";
+                if (mainDashboard) mainDashboard.style.display = "block";
 
-            applyAdminBranch(branch);
+                applyAdminBranch(branch);
 
-            if (document.getElementById("login-student-id")) {
-                document.getElementById("login-student-id").value = studentId;
-            }
-            toggleAuthView('login');
+                if (document.getElementById("login-student-id")) {
+                    document.getElementById("login-student-id").value = studentId;
+                }
+                toggleAuthView('login');
+            });
         } else {
+            hideLoading();
             alert("ลงทะเบียนไม่สำเร็จ: " + (data.message || "เกิดข้อผิดพลาด"));
         }
     } catch (err) {
+        hideLoading();
         alert("เกิดข้อผิดพลาดในการเชื่อมต่อเซิร์ฟเวอร์");
     }
 }
