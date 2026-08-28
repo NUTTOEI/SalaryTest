@@ -675,6 +675,7 @@ function applyAdminBranch(branch) {
         newBranchSelect.value = branch;
         newBranchSelect.disabled = true;
     }
+    loadBranchAvatar(branch);
     loadFromStorage();
 }
 
@@ -781,43 +782,23 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         });
 
-        btnSaveBranchImg.addEventListener('click', async () => {
-            if (!selectedFile) return;
-            const currentBranchId = '1';
-
-            const formData = new FormData();
-            formData.append('branchImage', selectedFile);
-            formData.append('branchId', currentBranchId);
-
-            btnSaveBranchImg.disabled = true;
-            btnSaveBranchImg.innerText = 'กำลังอัปโหลด...';
-
-            try {
-                const response = await fetch('/api/admin/branch/upload-profile', {
-                    method: 'POST',
-                    body: formData
-                });
-
-                const result = await response.json();
-
-                if (result.success) {
-                    alert('อัปเดตรูปโปรไฟล์เรียบร้อย!');
-                    branchProfileImg.src = result.imagePath;
-                    btnSaveBranchImg.style.display = 'none';
-                    selectedFile = null;
-                } else {
-                    alert('เกิดข้อผิดพลาด: ' + result.message);
-                }
-            } catch (error) {
-                console.error('Upload Error:', error);
-                alert('ไม่สามารถเชื่อต่อกับเซิร์ฟเวอร์ได้');
-            } finally {
-                btnSaveBranchImg.disabled = false;
-                btnSaveBranchImg.innerText = 'บันทึกรูปภาพ';
+async function loadBranchAvatar(branch) {
+    if (!branch) return;
+    try {
+        const response = await fetch(`/api/branch/profile?branch=${branch}`);
+        if (response.ok) {
+            const data = await response.json();
+            if (data.avatarUrl) {
+                const avatarImg = document.getElementById('branch-avatar-img');
+                const settingImg = document.getElementById('setting-avatar-preview');
+                if (avatarImg) avatarImg.src = data.avatarUrl;
+                if (settingImg) settingImg.src = data.avatarUrl;
             }
-        });
+        }
+    } catch (err) {
+        console.error("ไม่สามารถดึงรูปโปรไฟล์สาขาได้:", err);
     }
-});
+}
 
 document.addEventListener('DOMContentLoaded', () => {
     const openSettingBtn = document.getElementById('open-setting-btn');
@@ -828,47 +809,77 @@ document.addEventListener('DOMContentLoaded', () => {
     const mainAvatar = document.getElementById('branch-avatar-img');
     const saveAvatarBtn = document.getElementById('save-avatar-btn');
 
-    if (openSettingBtn && settingsModal) {
-        openSettingBtn.addEventListener('click', () => {
-            if (settingPreview && mainAvatar) {
-                settingPreview.src = mainAvatar.src;
-            }
-            settingsModal.style.display = 'flex';
-        });
-    }
+    let selectedFile = null;
 
-    if (closeSettingsBtn && settingsModal) {
-        closeSettingsBtn.addEventListener('click', () => {
-            settingsModal.style.display = 'none';
-        });
-    }
+    openSettingBtn?.addEventListener('click', () => {
+        if (settingPreview && mainAvatar) {
+            settingPreview.src = mainAvatar.src;
+        }
+        if (settingsModal) settingsModal.style.display = 'flex';
+    });
 
-    if (avatarInput) {
-        avatarInput.addEventListener('change', function(e) {
-            const file = e.target.files[0];
-            if (file) {
-                if (file.size > 2 * 1024 * 1024) {
-                    alert('ขนาดไฟล์ต้องไม่เกิน 2MB');
-                    avatarInput.value = '';
-                    return;
-                }
-                const reader = new FileReader();
-                reader.onload = function(evt) {
-                    settingPreview.src = evt.target.result;
-                };
-                reader.readAsDataURL(file);
-            }
-        });
-    }
+    // แก้ไขคำว่า 'clock' -> 'click'
+    closeSettingsBtn?.addEventListener('click', () => {
+        if (settingsModal) settingsModal.style.display = 'none';
+        selectedFile = null;
+    });
 
-    if (saveAvatarBtn) {
-        saveAvatarBtn.addEventListener('click', () => {
-            if (mainAvatar && settingPreview) {
-                mainAvatar.src = settingPreview.src;
+    avatarInput?.addEventListener('change', (e) => {
+        const file = e.target.files[0];
+        if (file) {
+            // แก้ไข 1021 -> 1024
+            if (file.size > 2 * 1024 * 1024) {
+                alert('ขนาดไฟล์ต้องไม่เกิน 2MB');
+                avatarInput.value = '';
+                return;
             }
-            settingsModal.style.display = 'none';
-            alert('บันทึกรูปโปรไฟล์เรียบร้อยแล้ว');
-        });
-    }
+            selectedFile = file;
+            const reader = new FileReader();
+            reader.onload = (evt) => {
+                if (settingPreview) settingPreview.src = evt.target.result;
+            };
+            reader.readAsDataURL(file);
+        }
+    });
+
+    saveAvatarBtn?.addEventListener('click', async () => {
+        if (!selectedFile) {
+            alert('กรุณาเลือกรูปภาพใหม่ก่อนบันทึก');
+            return;
+        }
+
+        const currentBranch = sessionStorage.getItem("admin_branch") || "comsci41";
+        const formData = new FormData();
+        formData.append('avatar', selectedFile);
+        formData.append('branch', currentBranch);
+
+        saveAvatarBtn.disabled = true;
+        saveAvatarBtn.innerText = 'กำลังบันทึก...';
+
+        try {
+            const response = await fetch('/api/admin/branch/upload-profile', {
+                method: 'POST',
+                body: formData
+            });
+
+            const result = await response.json();
+
+            if (result.success) {
+                alert('บันทึกรูปโปรไฟล์สาขาเรียบร้อยแล้ว');
+                if (mainAvatar) mainAvatar.src = result.avatarUrl;
+                // แก้ไข settingModal -> settingsModal
+                if (settingsModal) settingsModal.style.display = 'none';
+                selectedFile = null;
+            } else {
+                alert('เกิดข้อผิดพลาด: ' + result.message);
+            }
+        } catch (error) {
+            console.error('Upload Error:', error);
+            alert('ไม่สามารถเชื่อมต่อกับเซิร์ฟเวอร์ได้');
+        } finally {
+            saveAvatarBtn.disabled = false;
+            saveAvatarBtn.innerText = 'บันทึกรูปภาพ';
+        }
+    });
 });
 

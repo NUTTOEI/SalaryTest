@@ -87,12 +87,14 @@ app.put('/api/members/:id', async (req, res) => {
             SET name = COALESCE(?, name),
                 branch = COALESCE(?, branch),
                 paid_months = COALESCE(?, paid_months),
+                paid_weeks = COALESCE(?, paid_weeks),
                 history = COALESCE(?, history)
             WHERE id = ?`,
             [
                 name || null,
                 branch || null,
                 paidMonths ? JSON.stringify(paidMonths) : null,
+                paidWeeks ? JSON.stringify(paidWeeks) : null,
                 history ? JSON.stringify(history) : null,
                 id
             ]
@@ -421,48 +423,68 @@ app.listen(PORT, async () => {
 
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
-const storage = multer.diskStorage({
+const branchStorage = multer.diskStorage({
     destination: (req, file, cb) => {
-        cb(null, 'uploads/branches/');
+        cb(null, './uploads/');
     },
     filename: (req, file, cb) => {
-        const uniqueSuffix = date.now() + '-' + Math.round(Math,random() * 1E9);
-        const ext = path.extname(file.originalname);
-        cb(null, `branch-${req.body.branchId || 'profile'}-${uniqueSuffix}${ext}`);
+        const branch = req.body.branch || 'default';
+        cb(null, `avatar-${branch}-${Date.now()}${path.extname(file.originalname)}`);
     }
 });
 
-const uploadBranch = multer({
-    storage: storage,
-    limits: { fileSize: 2 * 1024 * 1024 },
+const uploadBranchAvatar = multer({
+    storage: branchStorage,
+    limits: { fileSize: 2 * 1024 * 1024 }, // ไม่เกิน 2MB
     fileFilter: (req, file, cb) => {
         if (file.mimetype.startsWith('image/')) {
             cb(null, true);
         } else {
-            cb(new Error('กรุณาอัพโหลดไฟล์รูปภาพเท่านั้น'));
+            cb(new Error('กรุณาอัปโหลดไฟล์รูปภาพเท่านั้น'));
         }
     }
 });
 
-app.post('/api/admin/branch/upload-profile', uploadBranch.single('branchImage'), async (req, res) => {
+app.get('/api/branch/profile', async (req, res) => {
     try {
-        const { branchId } = req.body;
+        const { branch } = req.query;
+        if (!branch) return res.status(400).json({ status: 'error', message: 'กรุณาระบุสาขา' });
+
+        const [rows] = await pool.query(
+            "SELECT `value` FROM settings WHERE `key` = ?", 
+            [`avatar_branch_${branch}`]
+        );
+        
+        const avatarUrl = rows.length > 0 ? rows[0].value : null;
+        res.json({ success: true, avatarUrl });
+    } catch (err) {
+        console.error('GET /api/branch/profile error:', err);
+        res.status(500).json({ status: 'error', message: err.message });
+    }
+});
+
+app.post('/api/admin/branch/upload-profile', uploadBranchAvatar.single('avatar'), async (req, res) => {
+    try {
+        const branch = req.body.branch;
         if (!req.file) {
             return res.status(400).json({ success: false, message: 'กรุณาเลือกไฟล์รูปภาพ' });
         }
 
-        const imagePath = `/uploads/branches/${req.file.filename}`;
+        const avatarUrl = `/uploads/${req.file.filename}`;
 
-        const query = 'UPDATE branches SET profile_img = ? WHERE id = ?';
-        await db.query(query, [imagePath, branchId]);
+        // บันทึก Path รูปภาพลงในตาราง settings แยกตามชื่อสาขา
+        await pool.query(
+            "INSERT INTO settings (`key`, `value`) VALUES (?, ?) ON DUPLICATE KEY UPDATE `value` = ?",
+            [`avatar_branch_${branch}`, avatarUrl, avatarUrl]
+        );
 
         res.json({
             success: true,
-            message: 'อัปเดทรูปโปรไฟล์สำเร็จ',
-            imagePath: imagePath
+            message: 'อัปเดตรูปโปรไฟล์สำเร็จ',
+            avatarUrl: avatarUrl
         });
     } catch (error) {
         console.error('Upload Error:', error);
-        res.status(500).json({ success: false, message: 'เกิดข้อผิดพลาด' });
+        res.status(500).json({ success: false, message: error.message || 'เกิดข้อผิดพลาดในการอัปโหลด' });
     }
 });
