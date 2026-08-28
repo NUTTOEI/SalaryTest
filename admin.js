@@ -808,7 +808,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 alert('เกิดข้อผิดพลาด: ' + result.message);
             }
         } catch (error) {
-            console.error('Upload Error:' error);
+            console.error('Upload Error:', error);
             alert('ไม่สามารถเชื่อต่อกับเซิร์ฟเวอร์ได้');
         } finally {
             btnSaveBranchImg.disabled = false;
