@@ -826,9 +826,9 @@ document.addEventListener('DOMContentLoaded', () => {
     const mainAvatar = document.getElementById('branch-avatar-img');
     const saveAvatarBtn = document.getElementById('save-avatar-btn');
 
-    if (openSettingsBtn && settingsModal) {
-        openSettingsBtn.addEventListener('click', () => {
-            if (settingsPreview && mainAvatar) {
+    if (openSettingBtn && settingsModal) {
+        openSettingBtn.addEventListener('click', () => {
+            if (settingPreview && mainAvatar) {
                 settingPreview.src = mainAvatar.src;
             }
             settingsModal.style.display = 'flex';
