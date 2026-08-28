@@ -768,7 +768,7 @@ document.addEventListener('DOMContentLoaded', () => {
     branchImgInput.addEventListener('change', (e) => {
         const file = e.target.files[0];
         if (file) {
-            if (file,size > 2 * 1024 * 1024) {
+            if (file.size > 2 * 1024 * 1024) {
                 alert('ขนาดไฟล์ต้องไม่เกิน 2MB');
                 branchImgInput.value = '';
                 return;

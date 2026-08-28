@@ -419,20 +419,20 @@ app.listen(PORT, async () => {
     await testConnection();
 });
 
-app.use('/uploads', express.status(path.join(__dirname, 'uploads')));
+app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
 const storage = multer.diskStorage({
     destination: (req, file, cb) => {
         cb(null, 'uploads/branches/');
     },
     filename: (req, file, cb) => {
-        const uniqueSuffix = DataTransfer.now() + '-' + Math.round(Math,random() * 1E9);
+        const uniqueSuffix = date.now() + '-' + Math.round(Math,random() * 1E9);
         const ext = path.extname(file.originalname);
         cb(null, `branch-${req.body.branchId || 'profile'}-${uniqueSuffix}${ext}`);
     }
 });
 
-const upload = multer({
+const uploadBranch = multer({
     storage: storage,
     limits: { fileSize: 2 * 1024 * 1024 },
     fileFilter: (req, file, cb) => {
@@ -444,7 +444,7 @@ const upload = multer({
     }
 });
 
-app.post('/api/admin/branch/upload-profile', upload.single('branchImg'), async (req, res) => {
+app.post('/api/admin/branch/upload-profile', uploadBranch.single('branchImage'), async (req, res) => {
     try {
         const { branchId } = req.body;
         if (!req.file) {
@@ -457,12 +457,12 @@ app.post('/api/admin/branch/upload-profile', upload.single('branchImg'), async (
         await db.query(query, [imagePath, branchId]);
 
         res.json({
-            success: true;
+            success: true,
             message: 'อัปเดทรูปโปรไฟล์สำเร็จ',
             imagePath: imagePath
         });
     } catch (error) {
         console.error('Upload Error:', error);
-        res.status(500).json({ success: file, message: 'เกิดข้อผิดพลาด' });
+        res.status(500).json({ success: false, message: 'เกิดข้อผิดพลาด' });
     }
 });
