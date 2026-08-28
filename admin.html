@@ -250,31 +250,101 @@
     </div>
 
     <!-- Modal ยืนยันตัวตน Admin -->
-    <div id="login-modal" class="modal-overlay">
-        <div class="modal-card">
-            <!-- หน้าเข้าสู่ระบบ -->
-            <div id="auth-login-box">
-            <h3>เข้าสู่ระบบแอดมิน</h3>
-            <input type="text" id="login-student-id" placeholder="กรอกรหัสนักศึกษา">
-            <div id="login-error" style="color:red; display:none; margin-top:5px;"></div>
-            <button id="btn-login-submit">เข้าสู่ระบบ</button>
-            <p style="margin-top:10px; font-size:12px;">
-                ยังไม่มีบัญชี? <a href="#" onclick="toggleAuthView('register')">ลงทะเบียนแอดมิน</a>
-            </p>
+<div id="login-modal" class="modal-overlay">
+    <div class="modal-card">
+        
+        <!-- หน้าเข้าสู่ระบบ -->
+        <div id="auth-login-box">
+            <div class="modal-header">
+                <div class="modal-icon target">
+                    <i class="ti ti-shield-lock"></i>
+                </div>
+                <div>
+                    <div class="modal-title">เข้าสู่ระบบแอดมิน</div>
+                    <div class="modal-sub">กรอกรหัสนักศึกษาเพื่อเข้าสู่ระบบจัดการ</div>
+                </div>
+            </div>
+
+            <div class="modal-body">
+                <div class="auth-field">
+                    <label for="login-student-id" class="auth-label">รหัสนักศึกษา</label>
+                    <div class="auth-input-wrap">
+                        <i class="ti ti-id"></i>
+                        <input type="text" id="login-student-id" class="auth-input" placeholder="เช่น 682172007" autocomplete="off">
+                    </div>
+                </div>
+
+                <!-- กล่องข้อความแจ้งเตือนเมื่อพบข้อผิดพลาด -->
+                <div id="login-error" class="auth-error-box" style="display: none;">
+                    <i class="ti ti-alert-circle"></i>
+                    <span id="login-error-text">ไม่พบรหัสนักศึกษานี้ในระบบ กรุณาลงทะเบียนก่อน</span>
+                </div>
+            </div>
+
+            <div class="auth-footer">
+                <button type="button" id="btn-login-submit" class="auth-btn">
+                    <i class="ti ti-login"></i> เข้าสู่ระบบ
+                </button>
+                <div class="auth-switch-text">
+                    ยังไม่มีบัญชี? <a href="#" onclick="toggleAuthView('register'); return false;">ลงทะเบียนแอดมิน</a>
+                </div>
+            </div>
         </div>
 
         <!-- หน้าลงทะเบียน -->
-        <div id="auth-register-box" style="display:none;">
-        <h3>ลงทะเบียนแอดมินสาขา</h3>
-        <input type="text" id="reg-student-id" placeholder="รหัสนักศึกษา (เช่น 6821207004)">
-        <input type="text" id="reg-name" placeholder="ชื่อ-นามสกุล">
-        <input type="text" id="reg-branch" placeholder="ชื่อรหัสสาขา (เช่น comsci41 หรือ BWBS)">
-        <button onclick="processAdminRegister()">บันทึกข้อมูล</button>
-        <p style="margin-top:10px; font-size:12px;">
-            มีบัญชีแล้ว? <a href="#" onclick="toggleAuthView('login')">กลับหน้าเข้าสู่ระบบ</a>
-        </p>
+        <div id="auth-register-box" style="display: none;">
+            <div class="modal-header">
+                <div class="modal-icon target">
+                    <i class="ti ti-user-plus"></i>
+                </div>
+                <div>
+                    <div class="modal-title">ลงทะเบียนแอดมินสาขา</div>
+                    <div class="modal-sub">กรอกข้อมูลเพื่อสร้างบัญชีผู้ดูแล</div>
+                </div>
+            </div>
+
+            <div class="modal-body">
+                <div class="auth-field">
+                    <label for="reg-student-id" class="auth-label">รหัสนักศึกษา</label>
+                    <div class="auth-input-wrap">
+                        <i class="ti ti-id"></i>
+                        <input type="text" id="reg-student-id" class="auth-input" placeholder="เช่น 6821207004" autocomplete="off">
+                    </div>
+                </div>
+
+                <div class="auth-field">
+                    <label for="reg-name" class="auth-label">ชื่อ-นามสกุล</label>
+                    <div class="auth-input-wrap">
+                        <i class="ti ti-user"></i>
+                        <input type="text" id="reg-name" class="auth-input" placeholder="สมชาย ใจดี" autocomplete="off">
+                    </div>
+                </div>
+
+                <div class="auth-field">
+                    <label for="reg-branch" class="auth-label">รหัสสาขา</label>
+                    <div class="auth-input-wrap">
+                        <i class="ti ti-building-community"></i>
+                        <input type="text" id="reg-branch" class="auth-input" placeholder="เช่น comsci41 หรือ BWBS" autocomplete="off">
+                    </div>
+                </div>
+
+                <div id="reg-error" class="auth-error-box" style="display: none;">
+                    <i class="ti ti-alert-circle"></i>
+                    <span id="reg-error-text">กรุณากรอกข้อมูลให้ครบถ้วน</span>
+                </div>
+            </div>
+
+            <div class="auth-footer">
+                <button type="button" class="auth-btn" onclick="processAdminRegister()">
+                    <i class="ti ti-device-floppy"></i> บันทึกข้อมูล
+                </button>
+                <div class="auth-switch-text">
+                    มีบัญชีแล้ว? <a href="#" onclick="toggleAuthView('login'); return false;">กลับหน้าเข้าสู่ระบบ</a>
+                </div>
+            </div>
+        </div>
+
     </div>
-  </div>
 </div>
 
 <script>
