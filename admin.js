@@ -788,6 +788,7 @@ async function loadBranchAvatar(branch) {
         if (response.ok) {
             const data = await response.json();
             if (data.avatarUrl) {
+                const timestampedUrl = `${data.avatarUrl}?t=${Date.now()}`;
                 const avatarImg = document.getElementById('branch-avatar-img');
                 const settingImg = document.getElementById('settings-avatar-preview') || document.getElementById('setting-avatar-preview');
                 if (avatarImg) avatarImg.src = data.avatarUrl;
@@ -864,7 +865,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
             if (result.success) {
                 alert('บันทึกรูปโปรไฟล์สาขาเรียบร้อยแล้ว');
-                if (mainAvatar) mainAvatar.src = result.avatarUrl;
+                const updatedUrl = `${result.avatarUrl}?t=${Date.now()}`;
+                if (mainAvatar) mainAvatar.src = updatedUrl;
                 if (settingsModal) settingsModal.style.display = 'none';
                 selectedFile = null;
             } else {
