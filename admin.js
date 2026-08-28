@@ -529,7 +529,6 @@ function updateModeUI(mode) {
 function initAdminApp() {
     localStorage.setItem("fund-dashboard-mode", "month");
     updateModeUI(getCollectionMode());
-    loadFromStorage();
     setupBranchTitle();
 }
 
@@ -643,7 +642,10 @@ async function processAdminLogin() {
         sessionStorage.setItem("admin_name", data.name);
 
         const loginModal = document.getElementById("login-modal");
+        const mainDashboard = document.getElementById("main-dashboard");
+
         if (loginModal) loginModal.style.display = "none";
+        if (mainDashboard) mainDashboard.style.display = "block";
         
         applyAdminBranch(data.branch);
     } catch (err) {
@@ -672,7 +674,18 @@ async function processAdminRegister() {
         const data = await response.json();
 
         if (data.success) {
-            alert("ลงทะเบียนสำเร็จ! สามารถเข้าสู่ระบบได้ทันที");
+            alert("ลงทะเบียนสำเร็จ!");
+
+            sessionStorage.setItem("admin_student_id", studentId);
+            sessionStorage.setItem("admin_branch", branch);
+
+            const loginModal = document.getElementById("login-modal");
+            const mainDashboard = document.getElementById("main-dashboard");
+            if (loginModal) loginModal.style.display = "none";
+            if (mainDashboard) mainDashboard.style.display = "block";
+
+            applyAdminBranch(branch);
+
             if (document.getElementById("login-student-id")) {
                 document.getElementById("login-student-id").value = studentId;
             }
@@ -712,12 +725,15 @@ function applyAdminBranch(branch) {
 function initAdminAuth() {
     const savedBranch = sessionStorage.getItem("admin_branch");
     const loginModal = document.getElementById("login-modal");
+    const mainDashboard = document.getElementById("main-dashboard");
 
     if (savedBranch) {
         if (loginModal) loginModal.style.display = "none";
+        if (mainDashboard) mainDashboard.style.display = "block";
         applyAdminBranch(savedBranch);
     } else {
         if (loginModal) loginModal.style.display = "flex";
+        if (mainDashboard) mainDashboard.style.display = "none";
     }
 
     const submitBtn = document.getElementById("btn-login-submit");
