@@ -241,7 +241,7 @@ function renderRow(m, index) {
             </button>
             
             <a href="detailmember.html?id=${m.id}" title="ดูรายละเอียด" onclick="event.stopPropagation();" style="display:flex; align-items:center; gap:4px; text-decoration: none; background:#EEF0FB; border:1px solid #C7CCEB; border-radius:6px; cursor:pointer; color:#4C5FD5; padding:4px 8px; font-size:12px; font-family:'Kanit'; white-space: nowrap;">
-                <i class="ti ti-calendar-event" style="font-size: 1.1rem;"></i> รายละเอียด
+                <i class="ti ti-calendar-event" style="font-size: 1.1rem;"></i> รายรายละเอียด
             </a>
 
             <button class="delete-btn" data-delete-id="${m.id}" title="ลบสมาชิก" style="background:none; border:none; cursor:pointer; color:#ff5252; padding:4px;">
@@ -630,7 +630,6 @@ function getBranchFromStudentId(studentId) {
 }
 
 function processAdminLogin() {
-    // แก้ไข: เปลี่ยนชื่อตัวแปรจาก input เป็น inputEl ให้ตรงกับที่เรียกใช้งานด้านล่าง
     const inputEl = document.getElementById("login-student-id");
     const errorEl = document.getElementById("login-error");
     const studentId = inputEl ? inputEl.value.trim() : "";
@@ -701,7 +700,6 @@ function initAdminAuth() {
     }
 }
 
-// แก้ไข: ปรับการเรียกทำงานให้อยู่ในรูปแบบความปลอดภัยสูง ครอบคลุมทุกสภาวะการโหลด DOM
 if (document.readyState === "loading") {
     document.addEventListener("DOMContentLoaded", initAdminAuth);
 } else {
@@ -714,21 +712,18 @@ document.addEventListener("DOMContentLoaded", () => {
     const cancelLogoutBtn = document.getElementById("cancel-logout-btn");
     const confirmLogoutBtn = document.getElementById("confirm-logout-btn");
 
-    // เปิด Modal เมื่อกดปุ่มออกจากระบบ
     if (logoutBtn) {
         logoutBtn.addEventListener("click", () => {
             if (logoutModal) logoutModal.classList.add("active");
         });
     }
 
-    // ปิด Modal เมื่อกดปุ่มยกเลิก
     if (cancelLogoutBtn) {
         cancelLogoutBtn.addEventListener("click", () => {
             if (logoutModal) logoutModal.classList.remove("active");
         });
     }
 
-    // ยืนยันออกจากระบบเมื่อกดปุ่ม "ออกจากระบบ" ใน Popup
     if (confirmLogoutBtn) {
         confirmLogoutBtn.addEventListener("click", () => {
             sessionStorage.removeItem("admin_student_id");
@@ -759,6 +754,7 @@ document.addEventListener("DOMContentLoaded", () => {
     overlay?.addEventListener("click", closeDrawer);
 });
 
+// จัดการรูปตัวอย่างสาขา (แก้ไขการปิดวงเล็บสมบูรณ์)
 document.addEventListener('DOMContentLoaded', () => {
     const branchImgInput = document.getElementById('branchImgInput');
     const branchProfileImg = document.getElementById('branchProfileImg');
@@ -781,7 +777,10 @@ document.addEventListener('DOMContentLoaded', () => {
                 btnSaveBranchImg.style.display = 'inline-block';
             }
         });
+    }
+});
 
+// ดึงรูปโปรไฟล์สาขามาแสดง
 async function loadBranchAvatar(branch) {
     if (!branch) return;
     try {
@@ -790,7 +789,7 @@ async function loadBranchAvatar(branch) {
             const data = await response.json();
             if (data.avatarUrl) {
                 const avatarImg = document.getElementById('branch-avatar-img');
-                const settingImg = document.getElementById('setting-avatar-preview');
+                const settingImg = document.getElementById('settings-avatar-preview') || document.getElementById('setting-avatar-preview');
                 if (avatarImg) avatarImg.src = data.avatarUrl;
                 if (settingImg) settingImg.src = data.avatarUrl;
             }
@@ -800,6 +799,7 @@ async function loadBranchAvatar(branch) {
     }
 }
 
+// จัดการการอัปโหลดรูปโปรไฟล์สาขาผ่าน Modal Settings
 document.addEventListener('DOMContentLoaded', () => {
     const openSettingBtn = document.getElementById('open-setting-btn');
     const closeSettingsBtn = document.getElementById('close-setting-btn');
@@ -818,7 +818,6 @@ document.addEventListener('DOMContentLoaded', () => {
         if (settingsModal) settingsModal.style.display = 'flex';
     });
 
-    // แก้ไขคำว่า 'clock' -> 'click'
     closeSettingsBtn?.addEventListener('click', () => {
         if (settingsModal) settingsModal.style.display = 'none';
         selectedFile = null;
@@ -827,7 +826,6 @@ document.addEventListener('DOMContentLoaded', () => {
     avatarInput?.addEventListener('change', (e) => {
         const file = e.target.files[0];
         if (file) {
-            // แก้ไข 1021 -> 1024
             if (file.size > 2 * 1024 * 1024) {
                 alert('ขนาดไฟล์ต้องไม่เกิน 2MB');
                 avatarInput.value = '';
@@ -867,7 +865,6 @@ document.addEventListener('DOMContentLoaded', () => {
             if (result.success) {
                 alert('บันทึกรูปโปรไฟล์สาขาเรียบร้อยแล้ว');
                 if (mainAvatar) mainAvatar.src = result.avatarUrl;
-                // แก้ไข settingModal -> settingsModal
                 if (settingsModal) settingsModal.style.display = 'none';
                 selectedFile = null;
             } else {
@@ -882,4 +879,3 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
 });
-

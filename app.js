@@ -1,5 +1,5 @@
-// app.js — เซิร์ฟเวอร์หลักตัวเดียว: serve หน้าเว็บ + API ที่ต่อ MySQL + ระบบตรวจสลิป (เดิมอยู่ใน scanQR.js)
-// รันด้วย: npm start  (package.json ต้องชี้ "start": "node app.js")
+// app.js — เซิร์ฟเวอร์หลักตัวเดียว: serve หน้าเว็บ + API ที่ต่อ MySQL + ระบบตรวจสลิป
+// รันด้วย: npm start (package.json ชี้ "start": "node app.js")
 
 const express = require('express');
 const cors = require('cors');
@@ -9,9 +9,8 @@ const sharp = require('sharp');
 const jsQR = require('jsqr');
 const axios = require('axios');
 const path = require('path');
+const fs = require('fs');
 const FormData = require('form-data');
-const db = require('./db');
-
 const { pool, testConnection } = require('./db');
 
 const app = express();
@@ -20,6 +19,13 @@ app.use(express.urlencoded({ limit: '10mb', extended: true }));
 app.use(cors());
 app.use(express.static(__dirname)); // serve admin.html, member.html, pay.html, css, รูป ฯลฯ
 
+// ตรวจสอบและสร้างโฟลเดอร์ uploads อัตโนมัติหากยังไม่มี
+const uploadsDir = path.join(__dirname, 'uploads');
+if (!fs.existsSync(uploadsDir)) {
+    fs.mkdirSync(uploadsDir, { recursive: true });
+}
+app.use('/uploads', express.static(uploadsDir));
+
 const upload = multer({ storage: multer.memoryStorage() });
 const processedSlips = new Set();
 
@@ -27,34 +33,35 @@ const LINE_ACCESS_TOKEN = process.env.LINE_ACCESS_TOKEN;
 const LINE_TARGET_IDS = [
     process.env.LINE_TARGET_ID,
     'Ufac721db10fe012f12410f3cf59c3eb7', // นัท ณัฐวัฒน์
-    'Ub0a8c9b3819bac10a968319bce489c2a' // สุพรรณณิกา คงคาศรี
-    // 'Uf963df571b9d63db04690e4801fe1439' // ฟิล์ม ปุณณ์เมธ
-   
-]
+    'Ub0a8c9b3819bac10a968319bce489c2a'  // สุพรรณณิกา คงคาศรี
+];
 const EXPECTED_RECEIVER_NAME = "สุพรรณณิกา คงคาศรี";
 
 const DEFAULT_MONTHS = () => Array(12).fill(false);
 const DEFAULT_WEEKS = () => Array(52).fill(false);
 
 /* ------------------------------------------------------------------ */
-/*  Helper: แปลงแถวจาก MySQL ให้ตรงกับ shape ที่ front-end (MEMBERS) ใช้อยู่  */
+/* Helper: แปลงแถวจาก MySQL ให้ตรงกับ shape ที่ front-end (MEMBERS) ใช้  */
 /* ------------------------------------------------------------------ */
 function rowToMember(row) {
+    const paidMonths = typeof row.paid_months === 'string' ? JSON.parse(row.paid_months) : (row.paid_months || DEFAULT_MONTHS());
+    const paidWeeks = typeof row.paid_weeks === 'string' ? JSON.parse(row.paid_weeks) : (row.paid_weeks || DEFAULT_WEEKS());
+    const history = typeof row.history === 'string' ? JSON.parse(row.history) : (row.history || []);
+
     return {
         id: row.id,
         branch: row.branch,
         name: row.name,
         amount: Number(row.amount),
-        paidMonths: row.paid_months,
-        paidWeeks: row.paid_weeks,
-        history: row.history,
-        // ให้เข้ากันได้กับโค้ดเก่าบางจุดที่เช็ค m.paid ตรงๆ
-        paid: Array.isArray(row.paid_months) && row.paid_months.every(Boolean),
+        paidMonths,
+        paidWeeks,
+        history,
+        paid: Array.isArray(paidMonths) && paidMonths.every(Boolean),
     };
 }
 
 /* ------------------------------------------------------------------ */
-/*  API: สมาชิก                                                        */
+/* API: สมาชิก                                                        */
 /* ------------------------------------------------------------------ */
 
 app.get('/api/members', async (req, res) => {
@@ -76,7 +83,6 @@ app.get('/api/members', async (req, res) => {
     }
 });
 
-// GET /api/members — ที่ admin.js / member.js / pay.js เรียกทุกครั้งตอนโหลดหน้า
 app.put('/api/members/:id', async (req, res) => {
     try {
         const { id } = req.params;
@@ -106,7 +112,6 @@ app.put('/api/members/:id', async (req, res) => {
     }
 });
 
-// POST /api/admin/members — เพิ่มสมาชิกใหม่ { name, amount, branch }
 app.post('/api/admin/members', async (req, res) => {
     try {
         const { name, amount, branch } = req.body;
@@ -129,7 +134,6 @@ app.post('/api/admin/members', async (req, res) => {
     }
 });
 
-// DELETE /api/admin/members/:id
 app.delete('/api/admin/members/:id', async (req, res) => {
     try {
         await pool.query('DELETE FROM members WHERE id = ?', [req.params.id]);
@@ -140,7 +144,6 @@ app.delete('/api/admin/members/:id', async (req, res) => {
     }
 });
 
-// PUT /api/admin/members/:id/amount — { amount }
 app.put('/api/admin/members/:id/amount', async (req, res) => {
     try {
         const rate = Number(req.body.amount);
@@ -155,7 +158,6 @@ app.put('/api/admin/members/:id/amount', async (req, res) => {
     }
 });
 
-// POST /api/admin/toggle-paid — { memberId, mode, monthIndex, weekIndex }
 app.post('/api/admin/toggle-paid', async (req, res) => {
     const conn = await pool.getConnection();
     try {
@@ -167,11 +169,12 @@ app.post('/api/admin/toggle-paid', async (req, res) => {
         }
         const member = rows[0];
         const rate = Number(member.amount) || 100;
-        const history = Array.isArray(member.history) ? member.history : [];
+        const history = Array.isArray(member.history) ? member.history : (typeof member.history === 'string' ? JSON.parse(member.history) : []);
         const nowDate = new Date().toLocaleDateString('th-TH');
 
         if (mode === 'week') {
-            const paidWeeks = Array.isArray(member.paid_weeks) ? member.paid_weeks.slice() : DEFAULT_WEEKS();
+            const rawWeeks = member.paid_weeks;
+            const paidWeeks = Array.isArray(rawWeeks) ? rawWeeks.slice() : (typeof rawWeeks === 'string' ? JSON.parse(rawWeeks) : DEFAULT_WEEKS());
             const newStatus = !Boolean(paidWeeks[weekIndex]);
             paidWeeks[weekIndex] = newStatus;
             history.push({
@@ -185,7 +188,8 @@ app.post('/api/admin/toggle-paid', async (req, res) => {
                 [JSON.stringify(paidWeeks), JSON.stringify(history), memberId]
             );
         } else {
-            const paidMonths = Array.isArray(member.paid_months) ? member.paid_months.slice() : DEFAULT_MONTHS();
+            const rawMonths = member.paid_months;
+            const paidMonths = Array.isArray(rawMonths) ? rawMonths.slice() : (typeof rawMonths === 'string' ? JSON.parse(rawMonths) : DEFAULT_MONTHS());
             const newStatus = !Boolean(paidMonths[monthIndex]);
             paidMonths[monthIndex] = newStatus;
             history.push({
@@ -209,7 +213,6 @@ app.post('/api/admin/toggle-paid', async (req, res) => {
     }
 });
 
-// POST /api/admin/reset — ล้างสถานะจ่ายเงินของทุกคนกลับเป็นค่าเริ่มต้น
 app.post('/api/admin/reset', async (req, res) => {
     try {
         await pool.query(
@@ -224,7 +227,7 @@ app.post('/api/admin/reset', async (req, res) => {
 });
 
 /* ------------------------------------------------------------------ */
-/*  API: เป้าหมายเก็บเงิน (ทางเลือก — แทนที่ localStorage เดิมถ้าต้องการ sync ข้ามเครื่อง)  */
+/* API: เป้าหมายเก็บเงิน                                                */
 /* ------------------------------------------------------------------ */
 app.get('/api/settings/target', async (req, res) => {
     try {
@@ -258,7 +261,7 @@ app.put('/api/admin/members/amount-all', async (req, res) => {
     try {
         const rate = Number(req.body.amount);
         if (!isFinite(rate) || rate < 0) {
-            return res.status(400).json({ status: 'error', message: 'ยอดเงินไม่ถูกต้องง' });
+            return res.status(400).json({ status: 'error', message: 'ยอดเงินไม่ถูกต้อง' });
         }
         await pool.query('UPDATE members SET amount = ?', [rate]);
         res.json({ status: 'success' });
@@ -269,11 +272,8 @@ app.put('/api/admin/members/amount-all', async (req, res) => {
 });
 
 /* ------------------------------------------------------------------ */
-/*  ระบบตรวจสลิปโอนเงิน + แจ้งเตือน LINE (ย้ายมาจาก scanQR.js เดิม)      */
+/* ระบบตรวจสลิปโอนเงิน + แจ้งเตือน LINE                                */
 /* ------------------------------------------------------------------ */
-// เพิ่ม Environment Variable บน Render: SLIPOK_API_KEY
-const SLIPOK_API_KEY = process.env.SLIPOK_API_KEY; 
-
 app.post('/verify-slip', upload.single('slip_image'), async (req, res) => {
     try {
         const expectedAmount = parseFloat(req.body.expected_amount);
@@ -284,7 +284,6 @@ app.post('/verify-slip', upload.single('slip_image'), async (req, res) => {
         const apiKey = (process.env.SLIPOK_API_KEY || 'SLIPOKT51XVYS').trim();
         const branchId = '73437';
 
-        // สร้าง FormData เพื่อส่งไฟล์รูปภาพสลิปตรงไปยัง SlipOK
         const formData = new FormData();
         formData.append('files', req.file.buffer, {
             filename: req.file.originalname || 'slip.jpg',
@@ -319,7 +318,6 @@ app.post('/verify-slip', upload.single('slip_image'), async (req, res) => {
             ''
         ).trim();
 
-        // 3. ตรวจสอบยอดเงินโอนจริงจากธนาคาร
         if (parseFloat(slipData.amount) !== expectedAmount) {
             return res.status(400).json({
                 status: 'fail',
@@ -327,19 +325,16 @@ app.post('/verify-slip', upload.single('slip_image'), async (req, res) => {
             });
         }
 
-        // 4. ตรวจสอบชื่อผู้รับโอน
         const receiverName = slipData.receiver?.name || '';
         const receiverUpper = receiverName.toUpperCase();
 
         const ALLOWED_RECEIVERS = [
-            // "ณัฐวัฒน์", "สุดพูล", "NATTHAWAT", "NATTAWAT", "SUDPOOL", "SUTPOOL",
-            "สุพรรณณิกา", "คงคาศรี", "SUPHANNIKA", "KHONGKASRI",
-
-            // "ปุณณ์เมธ", "ม่วงวิเชียร", "PUNMETH", "PUNNAMET", "MUANGWICHIAN",
+            "สุพรรณณิกา", "คงคาศรี", "SUPHANNIKA", "KHONGKASRI"
         ];
 
-        const isReceiverValid = ALLOWED_RECEIVERS.some(keyword => keyword.trim() !== '' && receiverUpper.includes(keyword.toUpperCase())
-    );
+        const isReceiverValid = ALLOWED_RECEIVERS.some(keyword => 
+            keyword.trim() !== '' && receiverUpper.includes(keyword.toUpperCase())
+        );
 
         if (!isReceiverValid) {
             return res.status(400).json({
@@ -348,17 +343,14 @@ app.post('/verify-slip', upload.single('slip_image'), async (req, res) => {
             });
         }
 
-        // 5. เช็คเลขที่รายการ (transRef) ใน MySQL กันส่งสลิปซ้ำ
         const transRef = slipData.transRef;
         const [existing] = await pool.query('SELECT trans_ref FROM processed_slips WHERE trans_ref = ?', [transRef]);
         if (existing.length > 0) {
             return res.status(400).json({ status: 'fail', message: 'สลิปนี้เคยถูกนำมาใช้งานแล้ว' });
         }
 
-        // บันทึก transRef ลงฐานข้อมูล
         await pool.query('INSERT INTO processed_slips (trans_ref) VALUES (?)', [transRef]);
 
-        // 6. ส่งแจ้งเตือน LINE Notify / LINE Messaging API
         const messageText =
             `👥 ชื่อผู้โอน: ${transferorName || 'ไม่ระบุ'}\n` +
             `🔔 แจ้งเตือนได้รับการชำระเงินสำเร็จ!\n` +
@@ -371,16 +363,17 @@ app.post('/verify-slip', upload.single('slip_image'), async (req, res) => {
             await axios.post(
                 'https://api.line.me/v2/bot/message/multicast',
                 { 
-                    to: LINE_TARGET_IDS, 
+                    to: LINE_TARGET_IDS.filter(Boolean), 
                     messages: [{ type: 'text', text: messageText }] 
                 },
-                { headers: { 
-                    'Content-Type': 'application/json', 
-                    'Authorization': `Bearer ${LINE_ACCESS_TOKEN}` 
-                } 
-            }
-        );
-    }
+                { 
+                    headers: { 
+                        'Content-Type': 'application/json', 
+                        'Authorization': `Bearer ${LINE_ACCESS_TOKEN}` 
+                    } 
+                }
+            );
+        }
 
         return res.json({
             status: 'success',
@@ -397,35 +390,11 @@ app.post('/verify-slip', upload.single('slip_image'), async (req, res) => {
 });
 
 /* ------------------------------------------------------------------ */
-/*  หน้าแรก + start server                                             */
+/* API: รูปโปรไฟล์สาขา                                                 */
 /* ------------------------------------------------------------------ */
-app.get('/', (req, res) => {
-    res.sendFile(path.join(__dirname, 'member.html'));
-});
-
-app.post('/webhook', (req, res) => {
-    const events = req.body.events || [];
-    events.forEach(event => {
-        if (event.source && event.source.userId) {
-            console.log('====================================');
-            console.log('User ID ของคนที่ทักมา:', event.source.userId);
-            console.log('====================================');
-        }
-    });
-    res.sendStatus(200);
-})
-
-const PORT = process.env.PORT || 3000;
-app.listen(PORT, async () => {
-    console.log(`🚀 Server running on port ${PORT}`);
-    await testConnection();
-});
-
-app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
-
 const branchStorage = multer.diskStorage({
     destination: (req, file, cb) => {
-        cb(null, './uploads/');
+        cb(null, uploadsDir);
     },
     filename: (req, file, cb) => {
         const branch = req.body.branch || 'default';
@@ -472,7 +441,6 @@ app.post('/api/admin/branch/upload-profile', uploadBranchAvatar.single('avatar')
 
         const avatarUrl = `/uploads/${req.file.filename}`;
 
-        // บันทึก Path รูปภาพลงในตาราง settings แยกตามชื่อสาขา
         await pool.query(
             "INSERT INTO settings (`key`, `value`) VALUES (?, ?) ON DUPLICATE KEY UPDATE `value` = ?",
             [`avatar_branch_${branch}`, avatarUrl, avatarUrl]
@@ -487,4 +455,29 @@ app.post('/api/admin/branch/upload-profile', uploadBranchAvatar.single('avatar')
         console.error('Upload Error:', error);
         res.status(500).json({ success: false, message: error.message || 'เกิดข้อผิดพลาดในการอัปโหลด' });
     }
+});
+
+/* ------------------------------------------------------------------ */
+/* หน้าแรก + Webhook + start server                                    */
+/* ------------------------------------------------------------------ */
+app.get('/', (req, res) => {
+    res.sendFile(path.join(__dirname, 'member.html'));
+});
+
+app.post('/webhook', (req, res) => {
+    const events = req.body.events || [];
+    events.forEach(event => {
+        if (event.source && event.source.userId) {
+            console.log('====================================');
+            console.log('User ID ของคนที่ทักมา:', event.source.userId);
+            console.log('====================================');
+        }
+    });
+    res.sendStatus(200);
+});
+
+const PORT = process.env.PORT || 3000;
+app.listen(PORT, async () => {
+    console.log(`🚀 Server running on port ${PORT}`);
+    await testConnection();
 });
