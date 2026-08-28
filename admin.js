@@ -480,6 +480,9 @@ async function saveTargetAmount() {
         alert("กรุณากรอกจำนวนเงินเพื่อตั้งเป้าหมาย");
         return;
     } 
+
+    closeTargetModal();
+    showLoading("กำลังบันทึกเป้าหมาย...");
         
     try {
         const response = await fetch('/api/settings/target', {
@@ -490,13 +493,15 @@ async function saveTargetAmount() {
 
         if (response.ok) {
             localStorage.setItem('fund-dashboard-target', targetValue);
-            closeTargetModal();
             await loadFromStorage();
+            showSuccess("บันทึกเป้าหมายสำเร็จ");
         } else {
+            hideLoading();
             alert("บันทึกไม่สำเร็จ: เซิร์ฟเวอร์ตอบกลับผิดพลาด");
         }
     } catch (error) {
         console.error('Error saving target:', error);
+        hideLoading();
         alert("เกิดข้อผิดพลาดในการเชื่อมต่อเซิร์ฟเวอร์");
     }
 }
@@ -899,8 +904,8 @@ document.addEventListener('DOMContentLoaded', () => {
         formData.append('branch', currentBranch);
         formData.append('avatar', selectedFile);
 
-        saveAvatarBtn.disabled = true;
-        saveAvatarBtn.innerText = 'กำลังบันทึก...';
+        if (settingsModal) settingsModal.style.display = 'none';
+        showLoading("กำลังอัปโหลดรูปโปรไฟล์...");
 
         try {
             const response = await fetch('/api/admin/branch/upload-profile', {
@@ -914,13 +919,15 @@ document.addEventListener('DOMContentLoaded', () => {
                 alert('บันทึกรูปโปรไฟล์สาขาเรียบร้อยแล้ว');
                 const updatedUrl = `${result.avatarUrl}?t=${Date.now()}`;
                 if (mainAvatar) mainAvatar.src = updatedUrl;
-                if (settingsModal) settingsModal.style.display = 'none';
                 selectedFile = null;
+                showSuccess("เปลี่ยนรูปโปรไฟล์สำเร็จ!");
             } else {
+                hideLoading();
                 alert('เกิดข้อผิดพลาด: ' + result.message);
             }
         } catch (error) {
             console.error('Upload Error:', error);
+            hideLoading();
             alert('ไม่สามารถเชื่อมต่อกับเซิร์ฟเวอร์ได้');
         } finally {
             saveAvatarBtn.disabled = false;
@@ -928,3 +935,51 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
 });
+
+// แสดงวงกลมหมุนรอโหลด
+function showLoading(message = "กำลังโหลดข้อมูล...") {
+    const modal = document.getElementById("loading-modal");
+    const spinnerBox = document.getElementById("loading-spinner-box");
+    const successBox = document.getElementById("loading-success-box");
+    const loadingText = document.getElementById("loading-text");
+
+    if (!modal) return;
+    if (loadingText) loadingText.textContent = message;
+    
+    spinnerBox.style.display = "block";
+    successBox.style.display = "none";
+    modal.style.display = "flex";
+}
+
+// เปลี่ยนเป็นเครื่องหมายติ๊กถูกสำเร็จ
+function showSuccess(message = "สำเร็จ!", duration = 1400, callback = null) {
+    const modal = document.getElementById("loading-modal");
+    const spinnerBox = document.getElementById("loading-spinner-box");
+    const successBox = document.getElementById("loading-success-box");
+    const successText = document.getElementById("success-text");
+
+    if (!modal) return;
+
+    if (successText) successText.textContent = message;
+    spinnerBox.style.display = "none";
+    
+    // แสดง Success Box และ Re-trigger แอนิเมชัน SVG
+    successBox.style.display = "block";
+    const svg = successBox.querySelector('.checkmark-svg');
+    if (svg) {
+        const newSvg = svg.cloneNode(true);
+        svg.parentNode.replaceChild(newSvg, svg);
+    }
+
+    // ซ่อน Modal เมื่อครบกำหนดเวลา
+    setTimeout(() => {
+        modal.style.display = "none";
+        if (typeof callback === "function") callback();
+    }, duration);
+}
+
+// ปิด Modal โหลดกรณีเกิด Error
+function hideLoading() {
+    const modal = document.getElementById("loading-modal");
+    if (modal) modal.style.display = "none";
+}

@@ -373,6 +373,30 @@ function toggleAuthView(mode) {
         </div>
     </div>
 
+    <!-- Modal สำหรับ Success Loading Animation -->
+<div id="loading-modal" class="modal-overlay" style="display: none;">
+    <div class="modal-card" style="text-align: center; width: 280px; padding: 32px 20px;">
+        
+        <!-- สถานะกำลังโหลด (Spinner) -->
+        <div id="loading-spinner-box">
+            <div class="loader-spinner"></div>
+            <p id="loading-text" style="margin: 16px 0 0 0; font-size: 14px; color: #1B1F3B; font-weight: 500;">กำลังบันทึกข้อมูล...</p>
+        </div>
+
+        <!-- สถานะโหลดเสร็จ (Checkmark Animation) -->
+        <div id="loading-success-box" style="display: none;">
+            <div class="success-checkmark-wrap">
+                <svg class="checkmark-svg" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 52 52">
+                    <circle class="checkmark-circle" cx="26" cy="26" r="23" fill="none"/>
+                    <path class="checkmark-check" fill="none" d="M14.1 27.2l7.1 7.2 16.7-16.8"/>
+                </svg>
+            </div>
+            <p id="success-text" style="margin: 0; font-size: 15px; color: #1E8E3E; font-weight: 600;">บันทึกสำเร็จ!</p>
+        </div>
+
+    </div>
+</div>
+
     <script src="data.js"></script>
     <script src="https://cdn.sheetjs.com/xlsx-0.20.3/package/dist/xlsx.full.min.js"></script>
     <script src="admin.js"></script>

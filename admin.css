@@ -1299,3 +1299,123 @@ body {
   text-decoration: underline;
   color: #3E4EC0;
 }
+
+/* แอนิเมชัน SVG วงกลมติ๊กถูก */
+.success-checkmark-wrap {
+    width: 80px;
+    height: 80px;
+    margin: 0 auto 16px;
+}
+
+.checkmark-svg {
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    display: block;
+    stroke-width: 3;
+    stroke: #1E8E3E; /* สีเขียวเครื่องหมาย */
+    stroke-miterlimit: 10;
+    animation: checkmark-scale 0.3s ease-in-out 0.9s both;
+}
+
+/* วาดเส้นวงกลมรอบนอก */
+.checkmark-circle {
+    stroke-dasharray: 166;
+    stroke-dashoffset: 166;
+    stroke-width: 3;
+    stroke-miterlimit: 10;
+    stroke: #1E8E3E;
+    fill: none;
+    animation: checkmark-stroke 0.6s cubic-bezier(0.65, 0, 0.45, 1) forwards;
+}
+
+/* วาดเส้นเครื่องหมายติ๊กถูก */
+.checkmark-check {
+    transform-origin: 50% 50%;
+    stroke-dasharray: 48;
+    stroke-dashoffset: 48;
+    animation: checkmark-stroke 0.3s cubic-bezier(0.65, 0, 0.45, 1) 0.6s forwards;
+}
+
+/* Keyframes สำหรับวาดเส้น stroke */
+@keyframes checkmark-stroke {
+    100% {
+        stroke-dashoffset: 0;
+    }
+}
+
+/* Keyframes สำหรับเด้งเบาๆ ตอนวาดเสร็จ */
+@keyframes checkmark-scale {
+    0%, 100% {
+        transform: none;
+    }
+    50% {
+        transform: scale3d(1.1, 1.1, 1);
+    }
+}
+
+/* ==========================================
+   Loading Spinner & Success Checkmark Animation
+   ========================================== */
+
+/* วงกลมหมุนตอนกำลังโหลด */
+.loader-spinner {
+    width: 52px;
+    height: 52px;
+    border: 4px solid #EEF0FB;
+    border-top: 4px solid #4C5FD5;
+    border-radius: 50%;
+    margin: 0 auto;
+    animation: spinner-rotate 0.8s linear infinite;
+}
+
+@keyframes spinner-rotate {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+/* ครอบ SVG ติ๊กถูก */
+.success-checkmark-wrap {
+    width: 70px;
+    height: 70px;
+    margin: 0 auto 12px;
+}
+
+.checkmark-svg {
+    width: 70px;
+    height: 70px;
+    border-radius: 50%;
+    display: block;
+    stroke-width: 3.5;
+    stroke: #1E8E3E;
+    stroke-miterlimit: 10;
+    animation: checkmark-scale 0.3s ease-in-out 0.8s both;
+}
+
+/* วาดเส้นวงกลม */
+.checkmark-circle {
+    stroke-dasharray: 166;
+    stroke-dashoffset: 166;
+    stroke-width: 3.5;
+    stroke-miterlimit: 10;
+    stroke: #1E8E3E;
+    fill: none;
+    animation: checkmark-stroke 0.5s cubic-bezier(0.65, 0, 0.45, 1) forwards;
+}
+
+/* วาดเส้นเครื่องหมายถูก */
+.checkmark-check {
+    transform-origin: 50% 50%;
+    stroke-dasharray: 48;
+    stroke-dashoffset: 48;
+    animation: checkmark-stroke 0.3s cubic-bezier(0.65, 0, 0.45, 1) 0.5s forwards;
+}
+
+@keyframes checkmark-stroke {
+    100% { stroke-dashoffset: 0; }
+}
+
+@keyframes checkmark-scale {
+    0%, 100% { transform: none; }
+    50% { transform: scale3d(1.15, 1.15, 1); }
+}
