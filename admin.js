@@ -1,5 +1,3 @@
-const { response } = require("express");
-
 if (typeof MEMBERS === "undefined") MEMBERS = [];
 if (typeof TARGET_AMOUNT === "undefined") TARGET_AMOUNT = 0;
 
