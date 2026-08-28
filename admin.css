@@ -957,13 +957,60 @@ body {
 }
 
 #login-modal {
-    background-color: #628df1 !important;
+   background: rgba(27, 31, 59, 0.5) !important;
+    backdrop-filter: blur(4px);
     position: fixed;
     top: 0;
     left: 0;
     width: 100vw;
     height: 100vh;
     z-index: 99999;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+#auth-login-box, 
+#auth-register-box {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    width: 100%;
+}
+
+.auth-input {
+    width: 100%;
+    padding: 10px 14px;
+    border: 1px solid #E4E6F0;
+    border-radius: 8px;
+    font-size: 14px;
+    font-family: 'Noto Sans Thai', sans-serif;
+    outline: none;
+    box-sizing: border-box;
+    transition: all 0.2s ease;
+}
+
+.auth-input:focus {
+    border-color: #4C5FD5;
+    box-shadow: 0 0 0 3px rgba(76, 95, 213, 0.15);
+}
+
+.auth-btn {
+    width: 100%;
+    padding: 10px;
+    background-color: #4C5FD5;
+    color: #ffffff;
+    border: none;
+    border-radius: 8px;
+    font-size: 14px;
+    font-weight: 500;
+    font-family: 'Noto Sans Thai', sans-serif;
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+}
+
+.auth-btn:hover {
+    background-color: #3E4EC0;
 }
 
 .menu-toggle-btn {
