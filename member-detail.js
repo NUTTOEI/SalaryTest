@@ -85,7 +85,11 @@ function renderMemberDetail() {
     const nameEl = document.getElementById("detail-name");
     const avatarEl = document.getElementById("detail-avatar");
     if (nameEl) nameEl.textContent = currentMember.name;
-    if (avatarEl) avatarEl.textContent = currentMember.id;
+    if (avatarEl) {
+        const memberIndex = allMembers.findIndex(m => m.id === currentMember.id);
+        const displayNum = memberIndex !== -1 ? memberIndex + 1 : 1;
+        avatarEl.textContent = displayNum;
+    }
 
     const rate = Number(currentMember.amount) || 100;
     const mode = localStorage.getItem("fund-dashboard-mode") || "month";
