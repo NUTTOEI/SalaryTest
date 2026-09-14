@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ชำระเงิน - เงินสาขา</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@500;600;700&family=Noto+Sans+Thai:wght@400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/tabler-icons/2.47.0/iconfont/tabler-icons.min.css">
+    <link rel="stylesheet" href="member.css">
+</head>
+<body>
+    <div class="page">
+        <div class="eyebrow">ชำระเงิน</div>
+        <div class="title">ระบบชำระเงิน</div>
+
+        <button class="back-btn" id="back-btn">
+            <i class="ti ti-arrow-left"></i> กลับไปหน้าโปรไฟล์
+        </button>
+
+        <div id="pay-form-wrap">
+            <div class="pay-summary">
+                <div class="who">สำหรับ <b id="who-name">-</b></div>
+                <div class="pay-label" id="payment-week-label">กรุณาเลือกรายการที่ต้องการชำระ</div>
+                <div class="amt" id="who-amount">฿0</div>
+            </div>
+
+            <div class="pay-input-group" id="month-selection-group">
+                <label>เลือกรายการชำระ (อัตรา ฿<span id="rate-display">0</span>)</label>
+                <div class="month-select-grid week-select-grid" id="month-select-grid">
+                </div>
+            </div>
+
+            <div id="step-method-wrap" class="step-hidden">
+                <div class="tabs">
+                    <button class="tab-btn" id="tab-qr"><i class="ti ti-qrcode"></i> สแกนจ่าย</button>
+                    <button class="tab-btn" id="tab-cash"><i class="ti ti-cash"></i> เงินสด</button>
+                </div>
+            
+                <div class="pay-panel step-hidden" id="panel-qr">
+                    <div class="qr-frame"><img id="qr-img" src="" alt="PromptPay QR code"></div>
+                    <div class="qr-caption">พร้อมเพย์ (PromptPay)</div>
+                    <div class="qr-name" id="qr-name">-</div>
+
+                    <div class="slip-upload-group" style="margin: 16px 0; text-align: left;">
+                        <label for="slip-file" style="font-size: 13px; color: var(--ink-soft); display: block; margin-bottom: 6px;">
+                            <i class="ti ti-paperclip"></i> แนบหลักฐานการโอน (สลิป)
+                        </label>
+                        <input type="file" id="slip-file" accept="image/*" style="width: 100%; font-size: 13px; padding: 8px; border: 1px dashed var(--line); border-radius: 8px; background: var(--paper-raised);">
+                    </div>
+                    <button class="confirm-btn" id="confirm-qr"><i class="ti ti-send"></i> โอนเงินสำเร็จ</button>
+                </div>
+
+                <div class="pay-panel step-hidden" id="panel-cash">
+                    <div class="cash-illustration">
+                        <i class="ti ti-cash-banknote" style="font-size:44px;"></i>
+                    </div>
+                    <div class="cash-copy">นำเงินสดมาชำระกับเหรัญญิกได้โดยตรง<br>แล้วกดปุ่มด้านล่างเพื่อแจ้งการชำระเงิน</div>
+                    <button class="confirm-btn" id="confirm-cash"><i class="ti ti-check"></i> แจ้งชำระด้วยเงินสด</button>
+                </div>
+            </div>
+        </div>
+
+        <div id="pay-done" class="pay-done hidden">
+            <div class="pay-done-icon"><i class="ti ti-clock"></i></div>
+            <div class="pay-done-title">แจ้งชำระเงินเรียบร้อย</div>
+            <div class="pay-done-sub">รอเหรัญญิกตรวจสอบและยืนยันยอด</div>
+            <a href="javascript:void(0)" id="done-back-link" class="ghost-btn">กลับไปหน้าโปรไฟล์</a>
+        </div>
+    </div>
+
+    <script src="data.js"></script>
+    <script src="promptpay.js"></script>
+    <script src="pay.js" defer></script>
+</body>
+</html>
