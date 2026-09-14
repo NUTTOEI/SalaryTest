@@ -26,7 +26,9 @@ async function loadMemberData() {
     }
 
     try {
-        const response = await fetch("/api/members", { cache: "no-store" });
+        const adminBranch = sessionStorage.getItem("admin_branch");
+        const fetchUrl = adminBranch ? `/api/members?branch=${adminBranch}` : "/api/members";
+        const response = await fetch(fetch, { cache: "no-store" });
         if (response.ok) {
             const data = await response.json();
             if (Array.isArray(data)) {
@@ -219,7 +221,9 @@ async function toggleWeekPayment(weekIndex, rate) {
 
 async function reloadCurrentMember() {
     try {
-        const response = await fetch("/api/members", { cache: "no-store" });
+        const adminBranch = sessionStorage.getItem("admin_branch");
+        const fetchUrl = adminBranch ? `/api/members?branch=${adminBranch}` : "/api/members";
+        const response = await fetch(fetchUrl, { cache: "no-store" });
         if (response.ok) {
             allMembers = await response.json();
             currentMember = allMembers.find(m => m.id === currentMember.id);
